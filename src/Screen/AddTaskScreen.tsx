@@ -5,13 +5,18 @@ import { StatusBar } from 'react-native';
 import { useState } from "react";
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useDispatch } from "react-redux";
+import { addTask } from "../../AddTodoSlice";
 
 
 const AddTaskScreen = () => {
     const navigation = useNavigation();
+
+    const dispatch = useDispatch();
+
+    const [title, setTitle] = useState('')
+    const [notes, setNotes] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('work');
-
-
 
     // State for date and time
     const [date, setDate] = useState(new Date());
@@ -54,10 +59,30 @@ const AddTaskScreen = () => {
         setShowTimePicker(true);
     };
 
+    const handleAddTask = () => {
 
+        let taskCategory: 'work' | 'personal' | 'event' | 'other';
 
+        if (selectedCategory === 'work' || selectedCategory === 'personal' || selectedCategory === 'event') {
+            taskCategory = selectedCategory;
+        } else {
+            taskCategory = 'other';
+        }
 
+        const newTask = {
+            id: Date.now().toString(),
+            title,
+            category: taskCategory,
+            date: date.toISOString(),
+            time: time.toISOString(),
+            notes,
+            isCompleted: false
+        }
+        console.log("newTask --> ", newTask)
 
+        dispatch(addTask(newTask))
+        navigation.goBack()
+    }
 
 
 
@@ -161,7 +186,7 @@ const AddTaskScreen = () => {
                         numberOfLines={4}
                     />
                 </View>
-                <TouchableOpacity style={styles.addButton} onPress={() => ""}>
+                <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
                     <Text style={styles.addButtonText}>Add New Task</Text>
                 </TouchableOpacity>
             </ScrollView>

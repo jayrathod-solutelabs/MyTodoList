@@ -6,10 +6,15 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from '../Navigation/StackNavigation';
 import { StatusBar } from 'react-native';
 import TaskListItem from '../components/TaskListItem';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const HomeScreen = () => {
     const navigation = useNavigation<NavigationProp>();
+    const tasks = useSelector((state: RootState) => state.tasks.tasks);
+
 
     return (
         <View style={styles.baseContainer}>
@@ -30,6 +35,16 @@ const HomeScreen = () => {
             <View style={styles.taskListContainer}>
                 <TaskListItem />
             </View>
+
+            {/* <View style={styles.taskListContainer}>
+                {tasks.length > 0 ? (
+                    tasks.map(task => (
+                        <TaskListItem key={task.id.toString()} task={task} />
+                    ))
+                ) : (
+                    <Text style={styles.noTasksText}>No tasks yet. Add a new task!</Text>
+                )}
+            </View> */}
 
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddTask')}>
                 <Text style={styles.addButtonText}>Add New Task</Text>
