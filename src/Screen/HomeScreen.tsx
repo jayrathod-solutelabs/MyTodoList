@@ -27,7 +27,10 @@ const HomeScreen = () => {
                 <CustomCard count={5} backgroundColor="#FFDDC1" message="Completed" />
                 <CustomCard count={3} backgroundColor="#C1D9FF" message="Pending" />
             </View>
-            <TaskListItem />
+            <View style={styles.taskListContainer}>
+                <TaskListItem />
+            </View>
+
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddTask')}>
                 <Text style={styles.addButtonText}>Add New Task</Text>
             </TouchableOpacity>
@@ -103,6 +106,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: 'white',
         fontWeight: '600',
+
+    },
+    taskListContainer: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        marginTop: 20,
+        marginHorizontal: 10,
+        elevation: 4,
+        padding: 5,
 
     }
 });
