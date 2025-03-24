@@ -4,9 +4,9 @@ import { formatTime } from "../utils/utilites";
 import { useDispatch } from "react-redux";
 const CheckmarkImage = require("../assets/checkmark.png");
 
-  // Map category to its corresponding icon
-  const getCategoryIcon = (category: string) => {
-    switch(category) {
+// Map category to its corresponding icon
+const getCategoryIcon = (category: string) => {
+    switch (category) {
         case 'work':
             return require('../assets/work_icon.png');
         case 'personal':
@@ -20,9 +20,9 @@ const CheckmarkImage = require("../assets/checkmark.png");
 
 
 const getCategoryBgColor = (category: string) => {
-    switch(category) {
+    switch (category) {
         case 'work':
-            return styles.categoryWorkBgColorr; 
+            return styles.categoryWorkBgColorr;
         case 'personal':
             return styles.categoryPersonalBgColor;
         case 'event':
@@ -36,33 +36,36 @@ const getCategoryBgColor = (category: string) => {
 const TaskListItem = ({ task }: { task: Task }) => {
 
     const dispatch = useDispatch();
-    
+
     const handleToggleCompletion = () => {
         dispatch(toggleTaskCompletion(task.id));
     };
-    
+
     return (
         <View style={styles.taskItem}>
             <View style={styles.taskContent}>
-            <View style={[styles.iconsContainer, styles.categoryIconCircle, getCategoryBgColor(task.category)]}>
+                <View style={[styles.iconsContainer, styles.categoryIconCircle, getCategoryBgColor(task.category)]}>
                     <Image
                         source={getCategoryIcon(task.category)}
                         style={styles.categoryIcon}
                     />
                 </View>
                 <View style={styles.taskTextContainer}>
-                    <Text style={styles.taskTitle}>{task.title}</Text>
-                    <Text style={styles.taskTime}>{formatTime(task.time)}</Text>
+                    <View style={styles.titleRow}>
+                        <Text style={styles.taskTitle}>{task.title}</Text>
+                        <Text style={[styles.taskTime, { marginStart: 8 }]}>{formatTime(task.time)}</Text>
+                        </View>
+                    <Text style={styles.taskTime}>{task.notes}</Text>
                 </View>
             </View>
-            <TouchableOpacity 
-                style={[styles.checkbox, task.isCompleted ? styles.checkedbox : {}]} 
+            <TouchableOpacity
+                style={[styles.checkbox, task.isCompleted ? styles.checkedbox : {}]}
                 onPress={handleToggleCompletion}
             >
                 {task.isCompleted && (
                     <Image source={CheckmarkImage} style={styles.checkmarkImage} />
                 )}
-                
+
             </TouchableOpacity>
 
         </View>
@@ -81,6 +84,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
+    },
+    titleRow: {
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "center",
     },
     inputIcon: {
         width: 20,
@@ -115,7 +123,7 @@ const styles = StyleSheet.create({
     categoryIcon: {
         height: 21,
         width: 21,
-        
+
     },
     taskTextContainer: {
         flex: 1,
@@ -151,12 +159,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        
+
     },
     checkmarkImage: {
         width: 18,
         height: 18,
-        tintColor: 'white', 
+        tintColor: 'white',
         resizeMode: 'contain',
     },
 

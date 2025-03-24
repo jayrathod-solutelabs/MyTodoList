@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import CustomCard from '../components/CustomCard';
 const logoImg = require("../assets/home-background.png");
 import { useNavigation } from "@react-navigation/native";
@@ -24,7 +24,7 @@ const HomeScreen = () => {
 
 
     return (
-        <View style={styles.baseContainer}>
+        <ScrollView style={styles.baseContainer}>
             <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
 
             <View style={styles.backgroundImage}>
@@ -64,7 +64,7 @@ const HomeScreen = () => {
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddTask')}>
                 <Text style={styles.addButtonText}>Add New Task</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
 
     )
 
@@ -161,6 +161,8 @@ const styles = StyleSheet.create({
     noTasksText: {
         textAlign: 'center',
         margin: 20,
-        color: '#888'
+        fontSize: 16,
+        color: '#0000000',
+        fontFamily: 'Inter-Bold'
     },
 });
