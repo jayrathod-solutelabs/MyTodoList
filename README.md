@@ -1,7 +1,7 @@
-# My Todo App
+# My Todo List
 
 ## Project Overview
-The **My Todo App** is a simple yet effective task management application built using **React Native**. It allows users to organize their daily tasks, categorize them, and track completion status with an intuitive UI.
+The **My Todo List** is a simple yet effective task management application built using **React Native**. It allows users to organize their daily tasks, categorize them, and track completion status with an intuitive UI.
 
 ## Features
 - **Add New Tasks**: Users can add tasks with a title, category, date, time, and notes.
@@ -23,29 +23,6 @@ The **My Todo App** is a simple yet effective task management application built 
 ![Home Screen - Tasks](/home_screen_with_tasks.png)
 ![Add Task Screen](/add_new_tasks.png)
 
-## Installation
-Follow these steps to set up and run the project:
-
-```sh
-# Clone the repository
-git clone https://github.com/yourusername/my-todo-app.git
-
-# Navigate to the project folder
-cd my-todo-app
-
-# Install dependencies
-npm install
-
-# Run the app
-npx react-native run-android  # For Android
-npx react-native run-ios      # For iOS
-```
-
-## Usage
-1. Open the app.
-2. Click on **Add New Task** to create a new task.
-3. Enter the details and save.
-4. View tasks on the home screen and mark them as completed when done.
 
 
 
