@@ -3,16 +3,18 @@ import { View, Text, StyleSheet } from "react-native";
 
 
 type CustomCardPropTypes = {
-    count: number,
+    count: number | string,  // Accept both number and string
     backgroundColor: string,
     message: string
 };
 
 const CustomCard: React.FC<CustomCardPropTypes> = ({ count, backgroundColor, message }) => {
+    const numericCount = parseInt(count as string, 10) || 0; // Convert string to int
+
     return (
         <View style={[styles.card, { backgroundColor }]}>
             {/* <IconComponent style={styles.icon} color="#3A7D44" /> */}
-            <Text style={styles.countText}>{count}</Text>
+            <Text style={styles.countText}>{numericCount}</Text>
             <Text style={styles.statusTextStyle}>{message}</Text>
 
         </View>

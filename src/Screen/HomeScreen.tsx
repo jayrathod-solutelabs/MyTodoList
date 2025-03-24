@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native';
 import CustomCard from '../components/CustomCard';
 const logoImg = require("../assets/home-background.png");
 import { useNavigation } from "@react-navigation/native";
@@ -8,12 +8,16 @@ import { StatusBar } from 'react-native';
 import TaskListItem from '../components/TaskListItem';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { completedTasks, pendingTasks } from '../../AddTodoSlice';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const HomeScreen = () => {
     const navigation = useNavigation<NavigationProp>();
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
+    const completedCount = useSelector((state: RootState) => completedTasks(state).length);
+    const pendingCount = useSelector((state: RootState) => pendingTasks(state).length);
+
 
 
     return (
@@ -29,22 +33,19 @@ const HomeScreen = () => {
             </View>
 
             <View style={styles.cardsView}>
-                <CustomCard count={5} backgroundColor="#FFDDC1" message="Completed" />
-                <CustomCard count={3} backgroundColor="#C1D9FF" message="Pending" />
+                <CustomCard count={completedCount.toString()} backgroundColor="#FFDDC1" message="Completed" />
+                <CustomCard count={pendingCount.toString()} backgroundColor="#C1D9FF" message="Pending" />
             </View>
             <View style={styles.taskListContainer}>
-                <TaskListItem />
+                <FlatList
+                    data={tasks}
+                    renderItem={({ item }) => <TaskListItem task={item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    ListEmptyComponent={
+                        <Text style={styles.noTasksText}>No tasks yet. Add a new task!</Text>
+                    }
+                />
             </View>
-
-            {/* <View style={styles.taskListContainer}>
-                {tasks.length > 0 ? (
-                    tasks.map(task => (
-                        <TaskListItem key={task.id.toString()} task={task} />
-                    ))
-                ) : (
-                    <Text style={styles.noTasksText}>No tasks yet. Add a new task!</Text>
-                )}
-            </View> */}
 
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddTask')}>
                 <Text style={styles.addButtonText}>Add New Task</Text>
@@ -131,5 +132,10 @@ const styles = StyleSheet.create({
         elevation: 4,
         padding: 5,
 
-    }
+    },
+    noTasksText: {
+        textAlign: 'center',
+        margin: 20,
+        color: '#888'
+    },
 });

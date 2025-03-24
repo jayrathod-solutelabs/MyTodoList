@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { RootState } from "./store";
+
 
 export interface Task {
-    id: String,
-    title: String,
+    id: string,
+    title: string,
     category: 'work' | 'personal' | 'event' | 'other',
-    date: String,
-    time: String,
-    notes: String
+    date: string,
+    time: string,
+    notes: string
     isCompleted: boolean
 }
 
@@ -27,6 +29,16 @@ const todoSlice = createSlice({
         }
     }
 })
+
+
+
+export const completedTasks = (state: RootState) => {
+    return state.tasks.tasks.filter((task) => task.isCompleted);
+};
+
+export const pendingTasks = (state: RootState) => {
+    return state.tasks.tasks.filter((task) => !task.isCompleted);
+};
 
 export const { addTask } = todoSlice.actions;
 export default todoSlice.reducer;

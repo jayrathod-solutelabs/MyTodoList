@@ -110,6 +110,7 @@ const AddTaskScreen = () => {
                     <TextInput
                         style={styles.textInputContainer}
                         placeholder="Task Title"
+                        onChangeText={setTitle}
                     />
                 </View>
                 <Text style={styles.labelText}>Category</Text>
@@ -184,6 +185,7 @@ const AddTaskScreen = () => {
                         placeholder="Notes"
                         multiline={true}
                         numberOfLines={4}
+                        onChangeText={setNotes}
                     />
                 </View>
                 <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
