@@ -78,7 +78,6 @@ const AddTaskScreen = () => {
             notes,
             isCompleted: false
         }
-        console.log("newTask --> ", newTask)
 
         dispatch(addTask(newTask))
         navigation.goBack()

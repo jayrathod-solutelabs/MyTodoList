@@ -8,7 +8,6 @@ export default function AddTaskScreen() {
 
   const handleAddTask = () => {
     // TODO: Implement task addition logic
-    console.log('Adding task:', taskTitle);
     navigation.goBack();
   };
 

@@ -48,6 +48,7 @@ const HomeScreen = () => {
                 {/* Completed Tasks Section */}
                 {completedTasks.length > 0 && (
                         <View style={[styles.completedSectionContainer, completedTasks.length === 1 && { marginTop: 5, paddingTop: 5 }]}>
+
                         <Text style={styles.completedSectionTitle}>Completed Tasks</Text>
                         {completedTasks.map(task => (
                             <TaskListItem key={task.id.toString()} task={task} />
