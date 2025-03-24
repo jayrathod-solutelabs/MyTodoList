@@ -21,7 +21,7 @@ The **My Todo App** is a simple yet effective task management application built 
 
 ![Home Screen - Empty](/home_screen_empty_state.png)
 ![Home Screen - Tasks](/home_screen_with_tasks.png)
-![Add Task Screen](/add_new_task_screen.png)
+![Add Task Screen](/add_new_task.png)
 
 ## Installation
 Follow these steps to set up and run the project:
