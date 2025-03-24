@@ -14,10 +14,8 @@ The **My Todo List** is a simple yet effective task management application built
 - **Frontend**: React Native
 - **State Management**: Redux
 - **Navigation**: React Navigation
-- **Styling**: React Native Stylesheet
 
 ## Screenshots
-### Home Screen (Empty State)
 
 ![Home Screen - Empty](/home_screen_empty_state.png)
 ![Home Screen - Tasks](/home_screen_with_tasks.png)
