@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch } from "react-redux";
 import { addTask } from "../../AddTodoSlice";
+import { commonStyles } from "../styles/commonStyles";
 
 
 const AddTaskScreen = () => {
@@ -87,8 +88,7 @@ const AddTaskScreen = () => {
 
     return (
 
-        <View style={styles.baseContainer}>
-
+        <View style={commonStyles.baseContainer}>
             <View style={styles.headerContainer}>
                 <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
 
@@ -114,14 +114,14 @@ const AddTaskScreen = () => {
                 </View>
                 <Text style={styles.labelText}>Category</Text>
                 <View style={styles.iconsContainer}>
-                    <TouchableOpacity style={[styles.categoryIconCircle, styles.categoryWorkBgColorr, selectedCategory === 'work' && styles.selectedCategory]} onPress={() => handleCategoryPress('work')}>
-                        <Image source={require("../assets/work_icon.png")} style={styles.categoryIcon} />
+                    <TouchableOpacity style={[commonStyles.categoryIconCircle, commonStyles.categoryWorkBgColorr, selectedCategory === 'work' && styles.selectedCategory]} onPress={() => handleCategoryPress('work')}>
+                        <Image source={require("../assets/work_icon.png")} style={commonStyles.categoryIcon} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.categoryIconCircle, styles.categoryEventBgColor, selectedCategory === 'event' && styles.selectedCategory]} onPress={() => handleCategoryPress('event')}>
-                        <Image source={require("../assets/event_icon.png")} style={styles.categoryIcon} />
+                    <TouchableOpacity style={[commonStyles.categoryIconCircle, commonStyles.categoryEventBgColor, selectedCategory === 'event' && styles.selectedCategory]} onPress={() => handleCategoryPress('event')}>
+                        <Image source={require("../assets/event_icon.png")} style={commonStyles.categoryIcon} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.categoryIconCircle, styles.categoryPersonalBgColor, selectedCategory === 'personal' && styles.selectedCategory]} onPress={() => handleCategoryPress('personal')}>
-                        <Image source={require("../assets/personal_icon.png")} style={styles.categoryIcon} />
+                    <TouchableOpacity style={[commonStyles.categoryIconCircle, commonStyles.categoryPersonalBgColor, selectedCategory === 'personal' && styles.selectedCategory]} onPress={() => handleCategoryPress('personal')}>
+                        <Image source={require("../assets/personal_icon.png")} style={commonStyles.categoryIcon} />
                     </TouchableOpacity>
                 </View>
 
@@ -137,7 +137,7 @@ const AddTaskScreen = () => {
                             />
                             <Image
                                 source={require('../assets/date_icon.png')}
-                                style={styles.inputIcon}
+                                style={commonStyles.inputIcon}
                             />
                         </View>
                         {showDatePicker && (
@@ -160,7 +160,7 @@ const AddTaskScreen = () => {
                             />
                             <Image
                                 source={require('../assets/time_icon.png')}
-                                style={styles.inputIcon}
+                                style={commonStyles.inputIcon}
                             />
                         </View>
                         {showTimePicker && (
@@ -188,7 +188,7 @@ const AddTaskScreen = () => {
                     />
                 </View>
                 <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
-                    <Text style={styles.addButtonText}>Add New Task</Text>
+                    <Text style={commonStyles.addButtonText}>Add New Task</Text>
                 </TouchableOpacity>
             </ScrollView>
 
@@ -197,11 +197,7 @@ const AddTaskScreen = () => {
 }
 
 const styles = StyleSheet.create({
-    baseContainer: {
-        flex: 1,
-        backgroundColor: '#F1F5F9',
-        width: '100%'
-    },
+
     headerContainer: {
         height: 100,
         width: '100%',
@@ -289,35 +285,6 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         alignItems: 'center'
     },
-    addButtonText: {
-        fontSize: 16,
-        color: 'white',
-        fontWeight: '600',
-        fontFamily: 'Inter-Bold'
-    },
-    categoryIconCircle: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        borderColor: 'white',
-        borderWidth: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 10
-    },
-    categoryWorkBgColorr: {
-        backgroundColor: '#DBECF6'
-    },
-    categoryEventBgColor: {
-        backgroundColor: '#E7E2F3'
-    },
-    categoryPersonalBgColor: {
-        backgroundColor: '#FEF5D3'
-    },
-    categoryIcon: {
-        height: 22,
-        width: 22
-    },
     dateTimeContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -341,11 +308,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16
     },
-    inputIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 5
-    },
+
     selectedCategory: {
         borderColor: '#5E35B1',
         borderWidth: 2

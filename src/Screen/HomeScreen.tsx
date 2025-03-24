@@ -9,6 +9,7 @@ import TaskListItem from '../components/TaskListItem';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { completedTasks, pendingTasks } from '../../AddTodoSlice';
+import { commonStyles } from '../styles/commonStyles';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -24,7 +25,7 @@ const HomeScreen = () => {
 
 
     return (
-        <ScrollView style={styles.baseContainer}>
+        <ScrollView style={commonStyles.baseContainer}>
             <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
 
             <View style={styles.backgroundImage}>
@@ -62,7 +63,7 @@ const HomeScreen = () => {
             </View>
 
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddTask')}>
-                <Text style={styles.addButtonText}>Add New Task</Text>
+                <Text style={commonStyles.addButtonText}>Add New Task</Text>
             </TouchableOpacity>
         </ScrollView>
 
@@ -84,11 +85,6 @@ const getFormattedDate = () => {
 
 
 const styles = StyleSheet.create({
-    baseContainer: {
-        flex: 1,
-        backgroundColor: '#F1F5F9',
-        width: '100%'
-    },
     text: {
         fontSize: 30,
     },
@@ -132,12 +128,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         alignItems: 'center'
     },
-    addButtonText: {
-        fontSize: 16,
-        color: 'white',
-        fontWeight: '600',
-
-    },
+    
     completedSectionContainer: {
         marginTop: completedTasks.length > 1 ? 20 : 10, // Reduce margin if only one task
         paddingTop: completedTasks.length > 1 ? 10 : 5,

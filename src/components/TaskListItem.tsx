@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Task, toggleTaskCompletion } from "../../AddTodoSlice";
 import { formatTime } from "../utils/utilites";
 import { useDispatch } from "react-redux";
+import { commonStyles } from "../styles/commonStyles";
 const CheckmarkImage = require("../assets/checkmark.png");
 
 // Map category to its corresponding icon
@@ -22,13 +23,13 @@ const getCategoryIcon = (category: string) => {
 const getCategoryBgColor = (category: string) => {
     switch (category) {
         case 'work':
-            return styles.categoryWorkBgColorr;
+            return commonStyles.categoryWorkBgColorr;
         case 'personal':
-            return styles.categoryPersonalBgColor;
+            return commonStyles.categoryPersonalBgColor;
         case 'event':
-            return styles.categoryEventBgColor;
+            return commonStyles.categoryEventBgColor;
         default:
-            return styles.categoryOtherBgColor;
+            return commonStyles.categoryOtherBgColor;
     }
 };
 
@@ -44,10 +45,10 @@ const TaskListItem = ({ task }: { task: Task }) => {
     return (
         <View style={styles.taskItem}>
             <View style={styles.taskContent}>
-                <View style={[styles.iconsContainer, styles.categoryIconCircle, getCategoryBgColor(task.category)]}>
+                <View style={[styles.iconsContainer, commonStyles.categoryIconCircle, getCategoryBgColor(task.category)]}>
                     <Image
                         source={getCategoryIcon(task.category)}
-                        style={styles.categoryIcon}
+                        style={commonStyles.categoryIcon}
                     />
                 </View>
                 <View style={styles.taskTextContainer}>
@@ -90,41 +91,12 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "center",
     },
-    inputIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 5
-    },
     iconsContainer: {
         flexDirection: 'row'
     },
-    categoryWorkBgColorr: {
-        backgroundColor: '#DBECF6'
-    },
-    categoryEventBgColor: {
-        backgroundColor: '#E7E2F3'
-    },
-    categoryPersonalBgColor: {
-        backgroundColor: '#FEF5D3'
-    },
-    categoryOtherBgColor: {
-        backgroundColor: '#F5F5F5'
-    },
-    categoryIconCircle: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        borderColor: 'white',
-        borderWidth: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 10
-    },
-    categoryIcon: {
-        height: 21,
-        width: 21,
+  
+    
 
-    },
     taskTextContainer: {
         flex: 1,
     },
