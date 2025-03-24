@@ -26,6 +26,13 @@ const todoSlice = createSlice({
     reducers: {
         addTask: (state, action: PayloadAction<Task>) => {
             state.tasks.push(action.payload);
+        },
+
+        toggleTaskCompletion: (state, action: PayloadAction<string>) => {
+            const task = state.tasks.find((task) => task.id === action.payload);
+            if (task) {
+                task.isCompleted = !task.isCompleted;
+            }
         }
     }
 })
@@ -40,7 +47,7 @@ export const pendingTasks = (state: RootState) => {
     return state.tasks.tasks.filter((task) => !task.isCompleted);
 };
 
-export const { addTask } = todoSlice.actions;
+export const { addTask, toggleTaskCompletion } = todoSlice.actions;
 export default todoSlice.reducer;
 
 

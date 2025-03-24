@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Task } from "../../AddTodoSlice";
+import { Task, toggleTaskCompletion } from "../../AddTodoSlice";
 import { formatTime } from "../utils/utilites";
+import { useDispatch } from "react-redux";
+const CheckmarkImage = require("../assets/checkmark.png");
 
   // Map category to its corresponding icon
   const getCategoryIcon = (category: string) => {
@@ -32,6 +34,13 @@ const getCategoryBgColor = (category: string) => {
 
 
 const TaskListItem = ({ task }: { task: Task }) => {
+
+    const dispatch = useDispatch();
+    
+    const handleToggleCompletion = () => {
+        dispatch(toggleTaskCompletion(task.id));
+    };
+    
     return (
         <View style={styles.taskItem}>
             <View style={styles.taskContent}>
@@ -46,8 +55,14 @@ const TaskListItem = ({ task }: { task: Task }) => {
                     <Text style={styles.taskTime}>{formatTime(task.time)}</Text>
                 </View>
             </View>
-            <TouchableOpacity style={styles.checkbox} onPress={() => { console.log('checkbox pressed') }}>
-
+            <TouchableOpacity 
+                style={[styles.checkbox, task.isCompleted ? styles.checkedbox : {}]} 
+                onPress={handleToggleCompletion}
+            >
+                {task.isCompleted && (
+                    <Image source={CheckmarkImage} style={styles.checkmarkImage} />
+                )}
+                
             </TouchableOpacity>
 
         </View>
@@ -127,9 +142,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     checkedbox: {
-        backgroundColor: '#5E35B1',
-        borderColor: '#5E35B1',
-    }
+        height: 24,
+        width: 24,
+        borderWidth: 2,
+        borderRadius: 6,
+        backgroundColor: '#4A3780',
+        borderColor: '#4A3780',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+        
+    },
+    checkmarkImage: {
+        width: 18,
+        height: 18,
+        tintColor: 'white', 
+        resizeMode: 'contain',
+    },
 
 })
 

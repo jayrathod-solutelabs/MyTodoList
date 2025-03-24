@@ -15,9 +15,12 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const HomeScreen = () => {
     const navigation = useNavigation<NavigationProp>();
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
-    const completedCount = useSelector((state: RootState) => completedTasks(state).length);
-    const pendingCount = useSelector((state: RootState) => pendingTasks(state).length);
-
+    // const completedCount = useSelector((state: RootState) => completedTasks(state).length);
+    // const pendingCount = useSelector((state: RootState) => pendingTasks(state).length);
+    const pendingTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => !task.isCompleted));
+    const completedTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => task.isCompleted));
+    const completedCount = completedTasks.length;
+    const pendingCount = pendingTasks.length;
 
 
     return (
@@ -37,14 +40,24 @@ const HomeScreen = () => {
                 <CustomCard count={pendingCount.toString()} backgroundColor="#C1D9FF" message="Pending" />
             </View>
             <View style={styles.taskListContainer}>
-                <FlatList
-                    data={tasks}
-                    renderItem={({ item }) => <TaskListItem task={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    ListEmptyComponent={
-                        <Text style={styles.noTasksText}>No tasks yet. Add a new task!</Text>
-                    }
-                />
+                {/* Pending Tasks Section */}
+                {pendingTasks.map(task => (
+                    <TaskListItem key={task.id.toString()} task={task} />
+                ))}
+                
+                {/* Completed Tasks Section */}
+                {completedTasks.length > 0 && (
+                        <View style={[styles.completedSectionContainer, completedTasks.length === 1 && { marginTop: 5, paddingTop: 5 }]}>
+                        <Text style={styles.completedSectionTitle}>Completed Tasks</Text>
+                        {completedTasks.map(task => (
+                            <TaskListItem key={task.id.toString()} task={task} />
+                        ))}
+                    </View>
+                )}
+                
+                {tasks.length === 0 && (
+                    <Text style={styles.noTasksText}>No tasks yet. Add a new task!</Text>
+                )}
             </View>
 
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddTask')}>
@@ -123,6 +136,17 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '600',
 
+    },
+    completedSectionContainer: {
+        marginTop: completedTasks.length > 1 ? 20 : 10, // Reduce margin if only one task
+        paddingTop: completedTasks.length > 1 ? 10 : 5,
+    },    
+    completedSectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#1B1B1D',
+        marginBottom: 8,
+        paddingHorizontal: 5,
     },
     taskListContainer: {
         backgroundColor: 'white',
