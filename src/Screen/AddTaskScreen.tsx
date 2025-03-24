@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput, Platform, Keyboard } from "react-native"
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput, Platform, Keyboard , ToastAndroid } from "react-native"
 const logoImg = require("../assets/home-background.png");
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { useState } from "react";
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -61,6 +62,20 @@ const AddTaskScreen = () => {
     };
 
     const handleAddTask = () => {
+        if (!title.trim()) {
+            if (Platform.OS === 'android') {
+                ToastAndroid.show("Please enter a title", ToastAndroid.SHORT);
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Validation Error',
+                    text2: 'Please enter a title',
+                });
+            }
+            return;
+        }
+    
+  
 
         let taskCategory: 'work' | 'personal' | 'event' | 'other';
 
