@@ -3,26 +3,50 @@ const logoImg = require("../assets/home-background.png");
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch } from "react-redux";
-import { addTask } from "../../AddTodoSlice";
+import { addTask, updateTask } from "../../AddTodoSlice";
 import { commonStyles } from "../styles/commonStyles";
+import { RootStackParamList } from "../Navigation/StackNavigation";
+import { StackScreenProps } from "@react-navigation/stack";
+
+type AddTaskScreenProps = StackScreenProps<RootStackParamList, 'AddTask' | 'EditTask'>;
 
 
-const AddTaskScreen = () => {
-    const navigation = useNavigation();
+
+const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
 
     const dispatch = useDispatch();
 
-    const [title, setTitle] = useState('')
-    const [notes, setNotes] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('work');
+    const existingTask = route.params?.task;
+    const isEditMode = !!existingTask;
+
+    console.log(existingTask);
+
+    useEffect(() => {
+        if (existingTask) {
+            console.log('Initializing with existing task:', {
+                title: existingTask.title,
+                notes: existingTask.notes,
+                category: existingTask.category,
+                date: new Date(existingTask.date),
+                time: new Date(existingTask.time)
+            });
+        }
+    }, [existingTask]);
+
+
+
+
+    const [title, setTitle] = useState(existingTask?.title || '');
+    const [notes, setNotes] = useState(existingTask?.notes || '');
+    const [selectedCategory, setSelectedCategory] = useState(existingTask?.category || 'work');
 
     // State for date and time
-    const [date, setDate] = useState(new Date());
-    const [time, setTime] = useState(new Date());
+    const [date, setDate] = useState(existingTask?.date ? new Date(existingTask.date) : new Date());
+    const [time, setTime] = useState(existingTask?.time ? new Date(existingTask.time) : new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -31,7 +55,7 @@ const AddTaskScreen = () => {
     const formattedTime = format(time, 'hh:mm a');
 
     const handleCategoryPress = (category: string) => {
-        setSelectedCategory(category);
+        setSelectedCategory(category as 'work' | 'personal' | 'event' | 'other');
     }
 
 
@@ -86,16 +110,20 @@ const AddTaskScreen = () => {
         }
 
         const newTask = {
-            id: Date.now().toString(),
+            id: isEditMode ? existingTask!.id : Date.now().toString(),
             title,
             category: taskCategory,
             date: date.toISOString(),
             time: time.toISOString(),
             notes,
-            isCompleted: false
+            isCompleted: isEditMode ? existingTask!.isCompleted : false
         }
 
-        dispatch(addTask(newTask))
+        if (isEditMode) {
+            dispatch(updateTask(newTask));
+        } else {
+            dispatch(addTask(newTask));
+        }
         navigation.goBack()
     }
 
@@ -110,7 +138,8 @@ const AddTaskScreen = () => {
 
                 <Image source={logoImg} style={styles.backgroundImage} />
                 <View style={styles.textContainer}>
-                    <Text style={styles.headerTitle}>Add New Task</Text>
+                    <Text style={styles.headerTitle}>{isEditMode ? 'Edit Task' : 'Add New Task'}</Text>
+                    
                     <TouchableOpacity
                         style={styles.closeButton}
                         onPress={() => navigation.goBack()}>
@@ -124,6 +153,7 @@ const AddTaskScreen = () => {
                     <TextInput
                         style={styles.textInputContainer}
                         placeholder="Task Title"
+                        value={title}
                         onChangeText={setTitle}
                     />
                 </View>
@@ -199,11 +229,12 @@ const AddTaskScreen = () => {
                         placeholder="Notes"
                         multiline={true}
                         numberOfLines={4}
+                        value={notes}
                         onChangeText={setNotes}
                     />
                 </View>
                 <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
-                    <Text style={commonStyles.addButtonText}>Add New Task</Text>
+                    <Text style={commonStyles.addButtonText}>{isEditMode ? 'Update Task' : 'Add New Task'}</Text>
                 </TouchableOpacity>
             </ScrollView>
 

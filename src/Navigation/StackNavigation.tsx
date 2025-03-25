@@ -2,10 +2,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../Screen/HomeScreen';
 import AddTaskScreen from '../Screen/AddTaskScreen';
 import Testing from '../Screen/Testing';
+import { Task } from '../../AddTodoSlice';
 
 export type RootStackParamList = {
     Home: undefined;
     AddTask: undefined;
+    EditTask: { task: Task };
     Testing: undefined;
 };
 
@@ -23,6 +25,11 @@ export default function StackNavigation() {
                 name="AddTask"
                 component={AddTaskScreen}
                 options={{ title: 'Add New Task', headerShown: false }}
+            />
+            <Stack.Screen
+                name="EditTask"
+                component={AddTaskScreen}
+                options={{ title: 'Edit Task', headerShown: false }}
             />
         </Stack.Navigator>
     );

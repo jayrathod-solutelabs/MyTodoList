@@ -3,6 +3,9 @@ import { Task, toggleTaskCompletion } from "../../AddTodoSlice";
 import { formatTime } from "../utils/utilites";
 import { useDispatch } from "react-redux";
 import { commonStyles } from "../styles/commonStyles";
+import { NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../Navigation/StackNavigation";
+import { useNavigation } from "@react-navigation/native";
 const CheckmarkImage = require("../assets/checkmark.png");
 
 // Map category to its corresponding icon
@@ -35,6 +38,8 @@ const getCategoryBgColor = (category: string) => {
 
 
 const TaskListItem = ({ task }: { task: Task }) => {
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
 
     const dispatch = useDispatch();
 
@@ -42,7 +47,16 @@ const TaskListItem = ({ task }: { task: Task }) => {
         dispatch(toggleTaskCompletion(task.id));
     };
 
+    const handleEditTask = () => {
+        navigation.navigate('EditTask', { task });
+    };
+
+
     return (
+        <TouchableOpacity 
+        style={styles.taskItem} 
+        onPress={handleEditTask} 
+    >
         <View style={styles.taskItem}>
             <View style={styles.taskContent}>
                 <View style={[styles.iconsContainer, commonStyles.categoryIconCircle, getCategoryBgColor(task.category)]}>
@@ -70,6 +84,7 @@ const TaskListItem = ({ task }: { task: Task }) => {
             </TouchableOpacity>
 
         </View>
+        </TouchableOpacity>
     );
 }
 
