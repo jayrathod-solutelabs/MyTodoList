@@ -5,7 +5,7 @@ import { RootState } from "./store";
 export interface Task {
     id: string,
     title: string,
-    category: 'work' | 'personal' | 'event' | 'other',
+    category: 'work' | 'personal' | 'event',
     date: string,
     time: string,
     notes: string

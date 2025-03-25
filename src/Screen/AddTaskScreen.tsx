@@ -55,7 +55,7 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     const formattedTime = format(time, 'hh:mm a');
 
     const handleCategoryPress = (category: string) => {
-        setSelectedCategory(category as 'work' | 'personal' | 'event' | 'other');
+        setSelectedCategory(category as 'work' | 'personal' | 'event');
     }
 
 
@@ -101,12 +101,12 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     
   
 
-        let taskCategory: 'work' | 'personal' | 'event' | 'other';
+        let taskCategory: 'work' | 'personal' | 'event';
 
         if (selectedCategory === 'work' || selectedCategory === 'personal' || selectedCategory === 'event') {
             taskCategory = selectedCategory;
         } else {
-            taskCategory = 'other';
+            taskCategory = 'work';
         }
 
         const newTask = {
