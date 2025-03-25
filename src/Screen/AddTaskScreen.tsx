@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch } from "react-redux";
-import { addTask, updateTask } from "../../AddTodoSlice";
+import { addTask, updateTask } from "./AddTodoSlice";
 import { commonStyles } from "../styles/commonStyles";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { StackScreenProps } from "@react-navigation/stack";

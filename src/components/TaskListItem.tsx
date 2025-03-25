@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Task, toggleTaskCompletion } from "../../AddTodoSlice";
+import { Task, toggleTaskCompletion } from "../Screen/AddTodoSlice";
 import { formatTime } from "../utils/utilites";
 import { useDispatch } from "react-redux";
 import { commonStyles } from "../styles/commonStyles";

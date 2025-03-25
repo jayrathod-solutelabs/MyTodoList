@@ -8,7 +8,7 @@ import { StatusBar } from 'react-native';
 import TaskListItem from '../components/TaskListItem';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { completedTasks, pendingTasks } from '../../AddTodoSlice';
+import { completedTasks, pendingTasks } from './AddTodoSlice';
 import { commonStyles } from '../styles/commonStyles';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

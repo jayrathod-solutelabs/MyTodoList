@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootState } from "./store";
+import { RootState } from "../../store";
 
 
 export interface Task {
@@ -10,7 +10,7 @@ export interface Task {
     time: string,
     notes: string
     isCompleted: boolean
-}
+}   
 
 interface TodoState {
     tasks: Task[]
