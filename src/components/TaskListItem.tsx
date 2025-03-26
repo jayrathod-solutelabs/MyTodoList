@@ -6,35 +6,8 @@ import { commonStyles } from "../styles/commonStyles";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { useNavigation } from "@react-navigation/native";
+import CategoryUtils from "../utils/categoryUtils";
 const CheckmarkImage = require("../assets/checkmark.png");
-
-// Map category to its corresponding icon
-const getCategoryIcon = (category: string) => {
-    switch (category) {
-        case 'work':
-            return require('../assets/work_icon.png');
-        case 'personal':
-            return require('../assets/personal_icon.png');
-        case 'event':
-            return require('../assets/event_icon.png');
-        default:
-            return require('../assets/other_icon.png');
-    }
-};
-
-
-const getCategoryBgColor = (category: string) => {
-    switch (category) {
-        case 'work':
-            return commonStyles.categoryWorkBgColorr;
-        case 'personal':
-            return commonStyles.categoryPersonalBgColor;
-        case 'event':
-            return commonStyles.categoryEventBgColor;
-        default:
-            return commonStyles.categoryOtherBgColor;
-    }
-};
 
 
 const TaskListItem = ({ task }: { task: Task }) => {
@@ -59,9 +32,9 @@ const TaskListItem = ({ task }: { task: Task }) => {
     >
         <View style={styles.taskItem}>
             <View style={styles.taskContent}>
-                <View style={[styles.iconsContainer, commonStyles.categoryIconCircle, getCategoryBgColor(task.category)]}>
+                <View style={[styles.iconsContainer, commonStyles.categoryIconCircle, CategoryUtils.getBgColor(task.category)]}>
                     <Image
-                        source={getCategoryIcon(task.category)}
+                        source={CategoryUtils.getIcon(task.category)}
                         style={commonStyles.categoryIcon}
                     />
                 </View>

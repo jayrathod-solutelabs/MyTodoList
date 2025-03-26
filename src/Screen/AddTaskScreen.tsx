@@ -11,6 +11,7 @@ import { addTask, updateTask } from "./AddTodoSlice";
 import { commonStyles } from "../styles/commonStyles";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { StackScreenProps } from "@react-navigation/stack";
+import CategoryUtils, { CategoryType } from "../utils/categoryUtils";
 
 type AddTaskScreenProps = StackScreenProps<RootStackParamList, 'AddTask' | 'EditTask'>;
 
@@ -42,7 +43,7 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
 
     const [title, setTitle] = useState(existingTask?.title || '');
     const [notes, setNotes] = useState(existingTask?.notes || '');
-    const [selectedCategory, setSelectedCategory] = useState(existingTask?.category || 'work');
+    const [selectedCategory, setSelectedCategory] = useState(existingTask?.category || CategoryUtils.defaultCategory);
 
     // State for date and time
     const [date, setDate] = useState(existingTask?.date ? new Date(existingTask.date) : new Date());
@@ -54,8 +55,8 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     const formattedDate = format(date, 'MMM dd, yyyy');
     const formattedTime = format(time, 'hh:mm a');
 
-    const handleCategoryPress = (category: string) => {
-        setSelectedCategory(category as 'work' | 'personal' | 'event');
+    const handleCategoryPress = (category: CategoryType) => {
+        setSelectedCategory(category);
     }
 
 
@@ -100,19 +101,10 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
         }
     
   
-
-        let taskCategory: 'work' | 'personal' | 'event';
-
-        if (selectedCategory === 'work' || selectedCategory === 'personal' || selectedCategory === 'event') {
-            taskCategory = selectedCategory;
-        } else {
-            taskCategory = 'work';
-        }
-
         const newTask = {
             id: isEditMode ? existingTask!.id : Date.now().toString(),
             title,
-            category: taskCategory,
+            category: selectedCategory,
             date: date.toISOString(),
             time: time.toISOString(),
             notes,
@@ -159,15 +151,19 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
                 </View>
                 <Text style={styles.labelText}>Category</Text>
                 <View style={styles.iconsContainer}>
-                    <TouchableOpacity style={[commonStyles.categoryIconCircle, commonStyles.categoryWorkBgColorr, selectedCategory === 'work' && styles.selectedCategory]} onPress={() => handleCategoryPress('work')}>
-                        <Image source={require("../assets/work_icon.png")} style={commonStyles.categoryIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[commonStyles.categoryIconCircle, commonStyles.categoryEventBgColor, selectedCategory === 'event' && styles.selectedCategory]} onPress={() => handleCategoryPress('event')}>
-                        <Image source={require("../assets/event_icon.png")} style={commonStyles.categoryIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[commonStyles.categoryIconCircle, commonStyles.categoryPersonalBgColor, selectedCategory === 'personal' && styles.selectedCategory]} onPress={() => handleCategoryPress('personal')}>
-                        <Image source={require("../assets/personal_icon.png")} style={commonStyles.categoryIcon} />
-                    </TouchableOpacity>
+                    {CategoryUtils.categories.map((category) => (
+                        <TouchableOpacity
+                            key={category}
+                            style={[
+                                commonStyles.categoryIconCircle,
+                                CategoryUtils.getBgColor(category),
+                                selectedCategory === category && styles.selectedCategory
+                            ]}
+                            onPress={() => setSelectedCategory(category)}
+                        >
+                            <Image source={CategoryUtils.getIcon(category)} style={commonStyles.categoryIcon} />
+                        </TouchableOpacity>
+                    ))}
                 </View>
 
                 <View style={styles.dateTimeContainer}>

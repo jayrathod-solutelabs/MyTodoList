@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from "../../store";
+import { CategoryType } from '../utils/categoryUtils';
 
 
 export interface Task {
     id: string,
     title: string,
-    category: 'work' | 'personal' | 'event',
+    category: CategoryType,
     date: string,
     time: string,
     notes: string
