@@ -24,7 +24,6 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     const existingTask = route.params?.task;
     const isEditMode = !!existingTask;
 
-    console.log(existingTask);
 
     useEffect(() => {
         if (existingTask) {

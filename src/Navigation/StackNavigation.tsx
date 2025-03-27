@@ -1,7 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../Screen/HomeScreen';
 import AddTaskScreen from '../Screen/AddTaskScreen';
-import Testing from '../Screen/Testing';
 import { Task } from '../Screen/AddTodoSlice';
 
 export type RootStackParamList = {
