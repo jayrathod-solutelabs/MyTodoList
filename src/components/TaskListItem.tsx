@@ -40,10 +40,10 @@ const TaskListItem = ({ task }: { task: Task }) => {
                 </View>
                 <View style={styles.taskTextContainer}>
                     <View style={styles.titleRow}>
-                        <Text style={styles.taskTitle}>{task.title}</Text>
-                        <Text style={[styles.taskTime, { marginStart: 8 }]}>{formatTime(task.time)}</Text>
+                        <Text style={task.isCompleted ? styles.completedTaskTitle : styles.taskTitle}>{task.title}</Text>
+                        <Text style={[task.isCompleted ? styles.completedTaskTime : styles.taskTime, { marginStart: 8 }]}>{formatTime(task.time)}</Text>
                         </View>
-                    <Text style={styles.taskTime}>{task.notes}</Text>
+                    <Text style={task.isCompleted ? styles.completedTaskTime : styles.taskTime}>{task.notes}</Text>
                 </View>
             </View>
             <TouchableOpacity
@@ -126,6 +126,20 @@ const styles = StyleSheet.create({
         height: 18,
         tintColor: 'white',
         resizeMode: 'contain',
+    },
+    completedTaskTitle : {
+        fontSize: 17,
+        fontFamily: 'Inter-Regular',
+        fontWeight: 600,
+        color: '#999',
+        textDecorationLine: 'line-through'
+    },
+    completedTaskTime: {
+        fontSize: 14,
+        fontFamily: 'Inter-Regular',
+        marginTop: 2,
+        color: '#999',
+        textDecorationLine: 'line-through'
     },
 
 })
