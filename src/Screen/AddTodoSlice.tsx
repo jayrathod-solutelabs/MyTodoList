@@ -78,7 +78,6 @@ export interface Task {
   export const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
     try {
       const response = await apiRequest<Task[]>(API_METHODS.GET, TASKS_ENDPOINT);
-      console.log("Fetched Tasks:", response);
       return response;
     } catch (error) {
       console.error("Failed to fetch tasks:", error);

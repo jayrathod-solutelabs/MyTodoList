@@ -38,12 +38,6 @@ const HomeScreen = () => {
         dispatch(fetchTasks());
     }, [dispatch]);
 
-    console.log("Tasks in Redux:", tasks); // 🔍 Debug Redux state
-
-    useEffect(() => {
-        console.log("Redux Tasks State:", tasks); 
-    }, [tasks]);
-
 
 
     return (
