@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput, Platform, Keyboard , ToastAndroid } from "react-native"
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput, Platform, Keyboard , ToastAndroid, ActivityIndicator } from "react-native"
 const logoImg = require("../assets/home-background.png");
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
@@ -13,6 +13,7 @@ import { RootStackParamList } from "../Navigation/StackNavigation";
 import { StackScreenProps } from "@react-navigation/stack";
 import CategoryUtils, { CategoryType } from "../utils/categoryUtils";
 import { AppDispatch, RootState } from "../../store";
+import { Task } from "./AddTodoSlice";
 
 type AddTaskScreenProps = StackScreenProps<RootStackParamList, 'AddTask' | 'EditTask'>;
 
@@ -23,6 +24,7 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     const dispatch = useDispatch<AppDispatch>();
     const existingTask = route.params?.task;
     const isEditMode = !!existingTask;
+    
 
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
     const loading = useSelector((state: RootState) => state.tasks.loading);
@@ -88,16 +90,22 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
         }
     
   
-        const taskData = {
+        const taskData: Omit<Task, "id" | "completed"> = {
             description: notes,
-            completed: isEditMode ? existingTask!.completed : false,
             meta: {
-                title,
-                category: selectedCategory,
-                date: date.toISOString(),
-                time: time.toISOString(),
-            }
-        };
+              title,
+              category: selectedCategory,
+              date: date.toISOString(),
+              time: time.toISOString(),
+            },
+          };
+        
+          try {
+            await dispatch(addTask(taskData)).unwrap();
+            navigation.goBack();
+          } catch (error) {
+            console.error("Failed to add task:", error);
+          }
         // if (isEditMode) {
         //     dispatch(updateTask(newTask));
         // } else {
@@ -223,9 +231,20 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
                         onChangeText={setNotes}
                     />
                 </View>
-                <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
-                    <Text style={commonStyles.addButtonText}>{isEditMode ? 'Update Task' : 'Add New Task'}</Text>
-                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.addButton, loading && styles.disabledButton]}
+                    onPress={handleAddTask}
+                    disabled={loading}
+                    >
+                    {loading ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                        <Text style={commonStyles.addButtonText}>
+                        {isEditMode ? "Update Task" : "Add New Task"}
+                        </Text>
+                    )}
+                    </TouchableOpacity>
+
             </ScrollView>
 
         </View>
@@ -312,6 +331,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         height: 150,
         textAlignVertical: 'top'
+    },
+    disabledButton: {
+        backgroundColor: "#A9A9A9", 
     },
     addButton: {
         backgroundColor: '#5E35B1',

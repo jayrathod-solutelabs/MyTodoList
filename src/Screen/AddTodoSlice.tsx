@@ -31,17 +31,24 @@ export interface Task {
     
   };
 
-// Async action to add a task
-export const addTask = createAsyncThunk<Task, Task, { rejectValue: string }>(
-    "/tasks/addTask",
-    async (taskData, { rejectWithValue }) => {
+  export const addTask = createAsyncThunk(
+    "tasks/addTask",
+    async (taskData: Omit<Task, "id" | "completed">) => {
       try {
-        return await apiRequest<Task>(API_METHODS.POST, TASKS_ENDPOINT, taskData);
-      } catch (error: any) {
-        return rejectWithValue(error.message || "Failed to add task");
+        const response = await apiRequest<Task>(
+          API_METHODS.POST,
+          TASKS_ENDPOINT,
+          taskData
+        );
+        return response;
+      } catch (error) {
+        console.error("Failed to add task:", error);
+        throw error;
       }
     }
   );
+  
+  
 
 
   export const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
