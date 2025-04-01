@@ -29,6 +29,9 @@ const TaskListItem = ({ task }: { task: Task }) => {
   
 
     const handleEditTask = () => {
+        if (task.meta.isCompleted) {
+            return; // Prevent navigation if the task is completed
+        }
         navigation.navigate('EditTask', { task });
     };
 

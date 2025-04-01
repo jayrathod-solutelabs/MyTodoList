@@ -49,7 +49,6 @@ export interface Task {
           },
         };
   
-        // Send PUT request with the full task data
         const response = await apiRequest(API_METHODS.PUT, `/todos/${task.id}`, updatedTask);
         return response.data;
       } catch (error: any) {
@@ -131,9 +130,25 @@ export interface Task {
         .addCase(updateTask.pending, (state) => {
             state.loading = true;
           })
-          .addCase(updateTask.fulfilled, (state, action) => {
+        .addCase(updateTask.fulfilled, (state) => {
             state.loading = false;
         })
+        // .addCase(updateTask.fulfilled, (state, action) => {
+        //     if (!action.payload || !action.payload.id) {
+        //       console.error("Update Task Error: Invalid response payload", action.payload);
+        //       return;
+        //     }
+        
+        //     const updatedTask = action.payload;
+        //     const index = state.tasks.findIndex((t) => t.id === updatedTask.id);
+        
+        //     if (index !== -1) {
+        //       state.tasks[index] = { ...state.tasks[index], ...updatedTask };
+        //     }
+        
+        //     console.log("Updated task successfully:", updatedTask);
+        //   })
+        
         .addCase(updateTask.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;

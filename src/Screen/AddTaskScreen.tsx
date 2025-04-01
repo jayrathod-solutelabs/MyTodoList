@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch, useSelector } from "react-redux";
-import { addTask, updateTask } from "./AddTodoSlice";
+import { addTask, fetchTasks, updateTask } from "./AddTodoSlice";
 import { commonStyles } from "../styles/commonStyles";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -109,6 +109,8 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
                 console.log("Task data:", taskData);
                 await dispatch(addTask({ ...taskData })).unwrap();
             }
+            dispatch(fetchTasks());
+    
             navigation.goBack();
         } catch (error) {
             console.error("Task operation failed:", error);
