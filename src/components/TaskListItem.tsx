@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Task, toggleTaskCompletion } from "../Screen/AddTodoSlice";
+import { fetchTasks, Task, toggleTaskCompletion, updateTask } from "../Screen/AddTodoSlice";
 import { formatTime } from "../utils/utilites";
 import { useDispatch } from "react-redux";
 import { commonStyles } from "../styles/commonStyles";
@@ -7,6 +7,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { useNavigation } from "@react-navigation/native";
 import CategoryUtils, { CategoryType } from "../utils/categoryUtils";
+import { AppDispatch } from "../../store";
 const CheckmarkImage = require("../assets/checkmark.png");
 
 
@@ -14,11 +15,18 @@ const TaskListItem = ({ task }: { task: Task }) => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
-    const handleToggleCompletion = () => {
-        dispatch(toggleTaskCompletion(task.id));
+    const handleToggleCompletion = async () => {
+        await dispatch(updateTask({ 
+            ...task, 
+            meta: { ...task.meta, isCompleted: !task.meta.isCompleted } 
+        })).unwrap();
+    
+        dispatch(fetchTasks()); // Fetch updated tasks after update
     };
+    
+  
 
     const handleEditTask = () => {
         navigation.navigate('EditTask', { task });
@@ -40,17 +48,17 @@ const TaskListItem = ({ task }: { task: Task }) => {
                 </View>
                 <View style={styles.taskTextContainer}>
                     <View style={styles.titleRow}>
-                        <Text style={task.completed ? styles.completedTaskTitle : styles.taskTitle}>{task.meta.title}</Text>
-                        <Text style={[task.completed ? styles.completedTaskTime : styles.taskTime, { marginStart: 8 }]}>{formatTime(task.meta.time)}</Text>
+                        <Text style={task.meta.isCompleted ? styles.completedTaskTitle : styles.taskTitle}>{task.meta.title}</Text>
+                        <Text style={[task.meta.isCompleted ? styles.completedTaskTime : styles.taskTime, { marginStart: 8 }]}>{formatTime(task.meta.time)}</Text>
                         </View>
-                    <Text style={task.completed ? styles.completedTaskTime : styles.taskTime}>{task.description}</Text>
+                    <Text style={task.meta.isCompleted ? styles.completedTaskTime : styles.taskTime}>{task.description}</Text>
                 </View>
             </View>
             <TouchableOpacity
-                style={[styles.checkbox, task.completed ? styles.checkedbox : {}]}
+                style={[styles.checkbox, task.meta.isCompleted ? styles.checkedbox : {}]}
                 onPress={handleToggleCompletion}
             >
-                {task.completed ? (
+                {task.meta.isCompleted ? (
                     <Image source={CheckmarkImage} style={styles.checkmarkImage} />
                     ) : (
                         <View style={{ minWidth: 20, minHeight: 20 }} />

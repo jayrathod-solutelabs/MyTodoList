@@ -29,8 +29,8 @@ const HomeScreen = () => {
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
     // const completedCount = useSelector((state: RootState) => completedTasks(state).length);
     // const pendingCount = useSelector((state: RootState) => pendingTasks(state).length);
-    const pendingTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => !task.completed));
-    const completedTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => task.completed));
+    const pendingTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => !task.meta.isCompleted));
+    const completedTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => task.meta.isCompleted));
     const completedCount = completedTasks.length;
     const pendingCount = pendingTasks.length;
 

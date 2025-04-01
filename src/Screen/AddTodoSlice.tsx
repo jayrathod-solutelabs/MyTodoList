@@ -15,6 +15,7 @@ export interface Task {
       category: string;
       date: string;
       time: string;
+      isCompleted : boolean;
     };
   }
 
@@ -38,26 +39,27 @@ export interface Task {
       try {
         const updatedTask = {
           description: task.description,
-          completed: task.completed,
+          completed: task.meta.isCompleted ? 1 : 0,
           meta: {
             title: task.meta.title,
             category: task.meta.category,
             date: task.meta.date,
             time: task.meta.time,
+            isCompleted: task.meta.isCompleted
           },
         };
   
-        const response = await apiRequest("PUT", `/todos/${task.id}`, updatedTask);
-        return response;
+        // Send PUT request with the full task data
+        const response = await apiRequest(API_METHODS.PUT, `/todos/${task.id}`, updatedTask);
+        return response.data;
       } catch (error: any) {
         return rejectWithValue(error.response?.data || "Failed to update task");
       }
     }
   );
-
   export const addTask = createAsyncThunk(
     "tasks/addTask",
-    async (taskData: Omit<Task, "id" | "completed">) => {
+    async (taskData: Omit<Task, "id">) => {
       try {
         const response = await apiRequest<Task>(
           API_METHODS.POST,
@@ -91,11 +93,12 @@ export interface Task {
     initialState,
     reducers: {
         toggleTaskCompletion: (state, action: PayloadAction<string>) => {
-            const task = state.tasks.find((task) => task.id === action.payload);
+            const taskId = action.payload;
+            const task = state.tasks.find((task) => task.id === taskId);
             if (task) {
-                task.completed = !task.completed;
+              task.meta.isCompleted = !task.meta.isCompleted;
             }
-        },
+          },
 
     },
     extraReducers: (builder) => {
@@ -130,15 +133,12 @@ export interface Task {
           })
           .addCase(updateTask.fulfilled, (state, action) => {
             state.loading = false;
-            const index = state.tasks.findIndex((t) => t.id === action.payload.id);
-            if (index !== -1) {
-              state.tasks[index] = action.payload;
-            }
-          })
-          .addCase(updateTask.rejected, (state, action) => {
+        })
+        .addCase(updateTask.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
-          })
+        });
+        
         ;
         
     },
@@ -147,13 +147,14 @@ export interface Task {
 
 
 export const completedTasks = (state: RootState) => {
-    return state.tasks.tasks.filter((task) => task.completed);
+    return state.tasks.tasks.filter((task) => task.meta.isCompleted);
 };
 
 export const pendingTasks = (state: RootState) => {
-    return state.tasks.tasks.filter((task) => !task.completed);
+    return state.tasks.tasks.filter((task) => !task.meta.isCompleted);
 };
 
-export default todoSlice.reducer;
 
+export default todoSlice.reducer;
+export const { toggleTaskCompletion } = todoSlice.actions;
 

@@ -90,13 +90,15 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
         }
     
   
-        const taskData: Omit<Task, "id" | "completed"> = {
+        const taskData: Omit<Task, "id"> & { meta: { isCompleted: boolean } } = {
             description: notes,
+            completed : false,
             meta: {
               title,
               category: selectedCategory,
               date: date.toISOString(),
               time: time.toISOString(),
+              isCompleted: false, 
             },
           };
         
@@ -104,25 +106,14 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
             if (isEditMode && existingTask) {
                 await dispatch(updateTask({ ...existingTask, ...taskData })).unwrap();
             } else {
-                await dispatch(addTask(taskData)).unwrap();
+                console.log("Task data:", taskData);
+                await dispatch(addTask({ ...taskData })).unwrap();
             }
             navigation.goBack();
         } catch (error) {
             console.error("Task operation failed:", error);
         }
-        // if (isEditMode) {
-        //     dispatch(updateTask(newTask));
-        // } else {
-        //     dispatch(addTask(newTask));
-        // }
-        // navigation.goBack()
 
-        // try {
-        //     await dispatch(addTask(taskData)).unwrap();
-        //     navigation.goBack();
-        // } catch (error) {
-        //     console.error("Failed to add task:", error);
-        // }
     }
 
 
