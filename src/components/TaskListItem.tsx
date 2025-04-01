@@ -6,7 +6,7 @@ import { commonStyles } from "../styles/commonStyles";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { useNavigation } from "@react-navigation/native";
-import CategoryUtils from "../utils/categoryUtils";
+import CategoryUtils, { CategoryType } from "../utils/categoryUtils";
 const CheckmarkImage = require("../assets/checkmark.png");
 
 
@@ -32,27 +32,29 @@ const TaskListItem = ({ task }: { task: Task }) => {
     >
         <View style={styles.taskItem}>
             <View style={styles.taskContent}>
-                <View style={[styles.iconsContainer, commonStyles.categoryIconCircle, CategoryUtils.getBgColor(task.category)]}>
+                <View style={[styles.iconsContainer, commonStyles.categoryIconCircle, CategoryUtils.getBgColor(task.meta.category as CategoryType)]}>
                     <Image
-                        source={CategoryUtils.getIcon(task.category)}
+                        source={CategoryUtils.getIcon(task.meta.category as CategoryType)}
                         style={commonStyles.categoryIcon}
                     />
                 </View>
                 <View style={styles.taskTextContainer}>
                     <View style={styles.titleRow}>
-                        <Text style={task.isCompleted ? styles.completedTaskTitle : styles.taskTitle}>{task.title}</Text>
-                        <Text style={[task.isCompleted ? styles.completedTaskTime : styles.taskTime, { marginStart: 8 }]}>{formatTime(task.time)}</Text>
+                        <Text style={task.completed ? styles.completedTaskTitle : styles.taskTitle}>{task.meta.title}</Text>
+                        <Text style={[task.completed ? styles.completedTaskTime : styles.taskTime, { marginStart: 8 }]}>{formatTime(task.meta.time)}</Text>
                         </View>
-                    <Text style={task.isCompleted ? styles.completedTaskTime : styles.taskTime}>{task.notes}</Text>
+                    <Text style={task.completed ? styles.completedTaskTime : styles.taskTime}>{task.description}</Text>
                 </View>
             </View>
             <TouchableOpacity
-                style={[styles.checkbox, task.isCompleted ? styles.checkedbox : {}]}
+                style={[styles.checkbox, task.completed ? styles.checkedbox : {}]}
                 onPress={handleToggleCompletion}
             >
-                {task.isCompleted && (
+                {task.completed ? (
                     <Image source={CheckmarkImage} style={styles.checkmarkImage} />
-                )}
+                    ) : (
+                        <View style={{ minWidth: 20, minHeight: 20 }} />
+                    )}
 
             </TouchableOpacity>
 

@@ -6,12 +6,13 @@ import Toast from 'react-native-toast-message';
 import { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useDispatch } from "react-redux";
-import { addTask, updateTask } from "./AddTodoSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addTask } from "./AddTodoSlice";
 import { commonStyles } from "../styles/commonStyles";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { StackScreenProps } from "@react-navigation/stack";
 import CategoryUtils, { CategoryType } from "../utils/categoryUtils";
+import { AppDispatch, RootState } from "../../store";
 
 type AddTaskScreenProps = StackScreenProps<RootStackParamList, 'AddTask' | 'EditTask'>;
 
@@ -19,34 +20,21 @@ type AddTaskScreenProps = StackScreenProps<RootStackParamList, 'AddTask' | 'Edit
 
 const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
 
-    const dispatch = useDispatch();
-
+    const dispatch = useDispatch<AppDispatch>();
     const existingTask = route.params?.task;
     const isEditMode = !!existingTask;
 
+    const tasks = useSelector((state: RootState) => state.tasks.tasks);
+    const loading = useSelector((state: RootState) => state.tasks.loading);
+    const error = useSelector((state: RootState) => state.tasks.error);
 
-    useEffect(() => {
-        if (existingTask) {
-            console.log('Initializing with existing task:', {
-                title: existingTask.title,
-                notes: existingTask.notes,
-                category: existingTask.category,
-                date: new Date(existingTask.date),
-                time: new Date(existingTask.time)
-            });
-        }
-    }, [existingTask]);
-
-
-
-
-    const [title, setTitle] = useState(existingTask?.title || '');
-    const [notes, setNotes] = useState(existingTask?.notes || '');
-    const [selectedCategory, setSelectedCategory] = useState(existingTask?.category || CategoryUtils.defaultCategory);
+    const [title, setTitle] = useState(existingTask?.meta.title || '');
+    const [notes, setNotes] = useState(existingTask?.description || '');
+    const [selectedCategory, setSelectedCategory] = useState(existingTask?.meta.category || CategoryUtils.defaultCategory);
 
     // State for date and time
-    const [date, setDate] = useState(existingTask?.date ? new Date(existingTask.date) : new Date());
-    const [time, setTime] = useState(existingTask?.time ? new Date(existingTask.time) : new Date());
+    const [date, setDate] = useState(existingTask?.meta.date ? new Date(existingTask.meta.date) : new Date());
+    const [time, setTime] = useState(existingTask?.meta.time ? new Date(existingTask.meta.time) : new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -85,7 +73,7 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
         setShowTimePicker(true);
     };
 
-    const handleAddTask = () => {
+    const handleAddTask = async () => {
         if (!title.trim()) {
             if (Platform.OS === 'android') {
                 ToastAndroid.show("Please enter a title", ToastAndroid.SHORT);
@@ -100,22 +88,29 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
         }
     
   
-        const newTask = {
-            id: isEditMode ? existingTask!.id : Date.now().toString(),
-            title,
-            category: selectedCategory,
-            date: date.toISOString(),
-            time: time.toISOString(),
-            notes,
-            isCompleted: isEditMode ? existingTask!.isCompleted : false
-        }
+        const taskData = {
+            description: notes,
+            completed: isEditMode ? existingTask!.completed : false,
+            meta: {
+                title,
+                category: selectedCategory,
+                date: date.toISOString(),
+                time: time.toISOString(),
+            }
+        };
+        // if (isEditMode) {
+        //     dispatch(updateTask(newTask));
+        // } else {
+        //     dispatch(addTask(newTask));
+        // }
+        // navigation.goBack()
 
-        if (isEditMode) {
-            dispatch(updateTask(newTask));
-        } else {
-            dispatch(addTask(newTask));
-        }
-        navigation.goBack()
+        // try {
+        //     await dispatch(addTask(taskData)).unwrap();
+        //     navigation.goBack();
+        // } catch (error) {
+        //     console.error("Failed to add task:", error);
+        // }
     }
 
 

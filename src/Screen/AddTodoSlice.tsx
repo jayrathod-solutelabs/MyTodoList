@@ -1,61 +1,113 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from "../../store";
 import { CategoryType } from '../utils/categoryUtils';
+import { API_METHODS } from '../api/apiMethods';
+import { TASKS_ENDPOINT } from '../api/endpoints';
+import { apiRequest } from '../api/apiManager';
 
 
 export interface Task {
-    id: string,
-    title: string,
-    category: CategoryType,
-    date: string,
-    time: string,
-    notes: string
-    isCompleted: boolean
-}   
+    id: string;
+    description: string;
+    completed: boolean;
+    meta: {
+      title: string;
+      category: string;
+      date: string;
+      time: string;
+    };
+  }
 
-interface TodoState {
-    tasks: Task[]
-}
+  interface TodoState {
+    tasks: Task[];
+    loading: boolean;
+    error: string | null;
+  }
 
-const initialState: TodoState = {
-    tasks: []
-}
+  const initialState: TodoState = {
+    tasks: [] as Task[],
+    loading: false,
+    error: null,
+    
+  };
 
-const todoSlice = createSlice({
+// Async action to add a task
+export const addTask = createAsyncThunk<Task, Task, { rejectValue: string }>(
+    "/tasks/addTask",
+    async (taskData, { rejectWithValue }) => {
+      try {
+        return await apiRequest<Task>(API_METHODS.POST, TASKS_ENDPOINT, taskData);
+      } catch (error: any) {
+        return rejectWithValue(error.message || "Failed to add task");
+      }
+    }
+  );
+
+
+  export const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
+    try {
+      const response = await apiRequest<Task[]>(API_METHODS.GET, TASKS_ENDPOINT);
+      console.log("Fetched Tasks:", response);
+      return response;
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+      throw error;
+    }
+  });
+  
+  
+  const todoSlice = createSlice({
     name: "tasks",
     initialState,
     reducers: {
-        addTask: (state, action: PayloadAction<Task>) => {
-            state.tasks.push(action.payload);
-        },
-
         toggleTaskCompletion: (state, action: PayloadAction<string>) => {
             const task = state.tasks.find((task) => task.id === action.payload);
             if (task) {
-                task.isCompleted = !task.isCompleted;
+                task.completed = !task.completed;
             }
         },
 
-        updateTask: (state, action: PayloadAction<Task>) => {
-            const index = state.tasks.findIndex(task => task.id === action.payload.id);
-            if (index !== -1) {
-                state.tasks[index] = action.payload;
-            }
-        },
-    }
-})
-
+    },
+    extraReducers: (builder) => {
+      builder
+        .addCase(addTask.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(addTask.fulfilled, (state, action) => {
+          state.loading = false;
+          state.tasks.push(action.payload);
+        })
+        .addCase(addTask.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message || "Failed to add task";
+        })
+        // ✅ Add fetchTasks handling
+        .addCase(fetchTasks.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(fetchTasks.fulfilled, (state, action) => {
+          state.loading = false;
+          state.tasks = action.payload;
+        })
+        .addCase(fetchTasks.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message || "Failed to fetch tasks";
+        });
+    },
+  });
+  
 
 
 export const completedTasks = (state: RootState) => {
-    return state.tasks.tasks.filter((task) => task.isCompleted);
+    return state.tasks.tasks.filter((task) => task.completed);
 };
 
 export const pendingTasks = (state: RootState) => {
-    return state.tasks.tasks.filter((task) => !task.isCompleted);
+    return state.tasks.tasks.filter((task) => !task.completed);
 };
 
-export const { addTask, toggleTaskCompletion, updateTask } = todoSlice.actions;
 export default todoSlice.reducer;
 
 

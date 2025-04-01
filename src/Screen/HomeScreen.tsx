@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ScrollView, ActivityIndicator } from 'react-native';
 import CustomCard from '../components/CustomCard';
 const logoImg = require("../assets/home-background.png");
 import { useNavigation } from "@react-navigation/native";
@@ -6,22 +6,44 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from '../Navigation/StackNavigation';
 import { StatusBar } from 'react-native';
 import TaskListItem from '../components/TaskListItem';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
-import { completedTasks, pendingTasks } from './AddTodoSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { completedTasks, fetchTasks, pendingTasks } from './AddTodoSlice';
 import { commonStyles } from '../styles/commonStyles';
+import { useEffect } from 'react';
+import React from "react";
+
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const HomeScreen = () => {
+
+    const dispatch = useDispatch<AppDispatch>(); // ✅ Dispatch Redux actions
+
+
+    const loading = useSelector((state: RootState) => state.tasks.loading);
+
+
+
     const navigation = useNavigation<NavigationProp>();
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
     // const completedCount = useSelector((state: RootState) => completedTasks(state).length);
     // const pendingCount = useSelector((state: RootState) => pendingTasks(state).length);
-    const pendingTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => !task.isCompleted));
-    const completedTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => task.isCompleted));
+    const pendingTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => !task.completed));
+    const completedTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => task.completed));
     const completedCount = completedTasks.length;
     const pendingCount = pendingTasks.length;
+
+    useEffect(() => {
+        dispatch(fetchTasks());
+    }, [dispatch]);
+
+    console.log("Tasks in Redux:", tasks); // 🔍 Debug Redux state
+
+    useEffect(() => {
+        console.log("Redux Tasks State:", tasks); 
+    }, [tasks]);
+
 
 
     return (
@@ -41,26 +63,29 @@ const HomeScreen = () => {
                 <CustomCard count={pendingCount.toString()} backgroundColor="#C1D9FF" message="Pending" />
             </View>
             <View style={styles.taskListContainer}>
-                {/* Pending Tasks Section */}
-                {pendingTasks.map(task => (
-                    <TaskListItem key={task.id.toString()} task={task} />
-                ))}
-                
-                {/* Completed Tasks Section */}
-                {completedTasks.length > 0 && (
-                        <View style={[styles.completedSectionContainer, completedTasks.length === 1 && { marginTop: 5, paddingTop: 5 }]}>
+            {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : tasks.length === 0 ? (
+                <Text style={styles.noTasksText}>No tasks yet. Add a new task!</Text>
+            ) : (
+                <>
+                    {/* Pending Tasks */}
+                    {pendingTasks.map(task => (
+                        <TaskListItem key={task.id.toString()} task={task} />
+                    ))}
 
-                        <Text style={styles.completedSectionTitle}>Completed Tasks</Text>
-                        {completedTasks.map(task => (
-                            <TaskListItem key={task.id.toString()} task={task} />
-                        ))}
-                    </View>
-                )}
-                
-                {tasks.length === 0 && (
-                    <Text style={styles.noTasksText}>No tasks yet. Add a new task!</Text>
-                )}
-            </View>
+                    {/* Completed Tasks */}
+                    {completedTasks.length > 0 && (
+                        <View style={[styles.completedSectionContainer, completedTasks.length === 1 && { marginTop: 5, paddingTop: 5 }]}>
+                            <Text style={styles.completedSectionTitle}>Completed Tasks</Text>
+                            {completedTasks.map(task => (
+                                <TaskListItem key={task.id.toString()} task={task} />
+                            ))}
+                        </View>
+                    )}
+                </>
+            )}
+        </View>
 
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddTask')}>
                 <Text style={commonStyles.addButtonText}>Add New Task</Text>
