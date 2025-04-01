@@ -31,6 +31,30 @@ export interface Task {
     
   };
 
+
+  export const updateTask = createAsyncThunk(
+    "tasks/updateTask",
+    async (task: Task, { rejectWithValue }) => {
+      try {
+        const updatedTask = {
+          description: task.description,
+          completed: task.completed,
+          meta: {
+            title: task.meta.title,
+            category: task.meta.category,
+            date: task.meta.date,
+            time: task.meta.time,
+          },
+        };
+  
+        const response = await apiRequest("PUT", `/todos/${task.id}`, updatedTask);
+        return response;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data || "Failed to update task");
+      }
+    }
+  );
+
   export const addTask = createAsyncThunk(
     "tasks/addTask",
     async (taskData: Omit<Task, "id" | "completed">) => {
@@ -101,7 +125,23 @@ export interface Task {
         .addCase(fetchTasks.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message || "Failed to fetch tasks";
-        });
+        })
+        .addCase(updateTask.pending, (state) => {
+            state.loading = true;
+          })
+          .addCase(updateTask.fulfilled, (state, action) => {
+            state.loading = false;
+            const index = state.tasks.findIndex((t) => t.id === action.payload.id);
+            if (index !== -1) {
+              state.tasks[index] = action.payload;
+            }
+          })
+          .addCase(updateTask.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+          })
+        ;
+        
     },
   });
   

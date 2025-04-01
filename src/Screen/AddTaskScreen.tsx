@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch, useSelector } from "react-redux";
-import { addTask } from "./AddTodoSlice";
+import { addTask, updateTask } from "./AddTodoSlice";
 import { commonStyles } from "../styles/commonStyles";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -101,11 +101,15 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
           };
         
           try {
-            await dispatch(addTask(taskData)).unwrap();
+            if (isEditMode && existingTask) {
+                await dispatch(updateTask({ ...existingTask, ...taskData })).unwrap();
+            } else {
+                await dispatch(addTask(taskData)).unwrap();
+            }
             navigation.goBack();
-          } catch (error) {
-            console.error("Failed to add task:", error);
-          }
+        } catch (error) {
+            console.error("Task operation failed:", error);
+        }
         // if (isEditMode) {
         //     dispatch(updateTask(newTask));
         // } else {
