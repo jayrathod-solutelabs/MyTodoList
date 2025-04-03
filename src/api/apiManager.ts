@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { API_METHODS } from './apiMethods';
-
-const API_BASE_URL = 'https://todos.simpleapi.dev/api';
-const API_KEY = "8ca8821e-15ce-4a7a-bd52-51b7c63d5ec2";
-
+import { API_BASE_URL, API_KEY } from '@env';
 
 const apiManager = axios.create({
     baseURL: API_BASE_URL,
