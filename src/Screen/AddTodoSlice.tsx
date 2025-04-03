@@ -63,7 +63,7 @@ export interface Task {
         const response = await apiRequest<Task>(
           API_METHODS.POST,
           TASKS_ENDPOINT,
-          taskData
+          taskData as Task
         );
         return response;
       } catch (error) {
