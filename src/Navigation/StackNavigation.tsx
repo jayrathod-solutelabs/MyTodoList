@@ -1,8 +1,9 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../Screen/HomeScreen';
 import AddTaskScreen from '../Screen/AddTaskScreen';
-import Signup from '../Screen/Signup';
 import { Task } from '../Screen/AddTodoSlice';
+import SignUp from '../Screen/SignUp';
+import LoginScreen from '../Screen/LoginScreen';
 
 export type RootStackParamList = {
     Home: undefined;
@@ -21,7 +22,12 @@ export default function StackNavigation() {
             <Stack.Screen
                 name="SignUp"
                 options={{ headerShown: false }}
-                component={Signup}
+                component={SignUp}
+            />
+            <Stack.Screen
+                name="Login"
+                options={{ headerShown: false }}
+                component={LoginScreen}
             />
             <Stack.Screen
                 name="Home"
