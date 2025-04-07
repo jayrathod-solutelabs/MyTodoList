@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StatusBar,
   TextInput,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 const logoImg = require("../assets/home-background.png");
 const googleImg = require("../assets/google.png");
@@ -13,11 +15,60 @@ import { commonStyles } from "../styles/commonStyles";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { register, RegisterRequest } from "./AuthSlice";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const SignUp = () => {
   const navigation = useNavigation<NavigationProp>();
+  const dispatch = useDispatch<AppDispatch>();
+  
+  // State for form fields
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
+  // Get auth state from redux
+  const { loading, error } = useSelector((state: RootState) => state.auth);
+
+  // Handle sign up
+  const handleSignUp = async () => {
+    // Validate inputs
+    if (!firstName || !lastName || !email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    // Create the full name from first and last name
+    const fullName = `${firstName} ${lastName}`;
+    
+    // Create user data object
+    const userData: RegisterRequest = {
+      name: fullName,
+      email,
+      password
+    };
+
+    try {
+      // Dispatch register action
+      const resultAction = await dispatch(register(userData));
+      
+      if (register.fulfilled.match(resultAction)) {
+        // Registration successful, navigate to Add Task screen
+        Alert.alert("Success", "Account created successfully");
+        navigation.navigate("AddTask");
+      } else {
+        // Show error if registration failed but wasn't caught in the thunk
+        Alert.alert("Registration Failed", "Please try again later");
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -46,6 +97,8 @@ const SignUp = () => {
             <TextInput
               style={styles.textInputContainer}
               placeholder="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
             />
           </View>
 
@@ -53,6 +106,8 @@ const SignUp = () => {
             <TextInput
               style={styles.textInputContainer}
               placeholder="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
             />
           </View>
         </View>
@@ -60,8 +115,10 @@ const SignUp = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInputContainer}
-            placeholder="Loisbecket@gmail.com"
+            placeholder="Email address"
             keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
         </View>
 
@@ -70,14 +127,24 @@ const SignUp = () => {
             style={styles.textInputContainer}
             placeholder="Password"
             secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
           />
         </View>
 
+        {/* Error message */}
+        {error && <Text style={styles.errorText}>{error}</Text>}
+        
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate("AddTask")}
+          onPress={handleSignUp}
+          disabled={loading}
         >
-          <Text style={commonStyles.addButtonText}>Sign Up</Text>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={commonStyles.addButtonText}>Sign Up</Text>
+          )}
         </TouchableOpacity>
 
         {/* Or Divider */}
@@ -324,6 +391,11 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: 16,
     fontWeight: "500",
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 

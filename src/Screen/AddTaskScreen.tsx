@@ -14,17 +14,24 @@ import { StackScreenProps } from "@react-navigation/stack";
 import CategoryUtils, { CategoryType } from "../utils/categoryUtils";
 import { AppDispatch, RootState } from "../../store";
 import { Task } from "./AddTodoSlice";
+import { selectIsAuthenticated } from "./AuthSlice";
 
 type AddTaskScreenProps = StackScreenProps<RootStackParamList, 'AddTask' | 'EditTask'>;
 
-
-
 const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
-
     const dispatch = useDispatch<AppDispatch>();
     const existingTask = route.params?.task;
     const isEditMode = !!existingTask;
     
+    // Check if user is authenticated
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    
+    useEffect(() => {
+        // Redirect to login if not authenticated
+        if (!isAuthenticated) {
+            navigation.navigate('Login');
+        }
+    }, [isAuthenticated, navigation]);
 
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
     const loading = useSelector((state: RootState) => state.tasks.loading);
@@ -47,7 +54,6 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     const handleCategoryPress = (category: CategoryType) => {
         setSelectedCategory(category);
     }
-
 
     // Date picker handler
     const onDateChange = (event: any, selectedDate?: Date) => {
@@ -76,6 +82,12 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     };
 
     const handleAddTask = async () => {
+        // Return if not authenticated
+        if (!isAuthenticated) {
+            navigation.navigate('Login');
+            return;
+        }
+        
         if (!title.trim()) {
             if (Platform.OS === 'android') {
                 ToastAndroid.show("Please enter a title", ToastAndroid.SHORT);
@@ -89,7 +101,6 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
             return;
         }
     
-  
         const taskData: Omit<Task, "id"> & { meta: { isCompleted: boolean } } = {
             description: notes,
             completed : false,
@@ -115,17 +126,17 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
         } catch (error) {
             console.error("Task operation failed:", error);
         }
-
     }
 
-
+    
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
-
         <View style={commonStyles.baseContainer}>
             <View style={styles.headerContainer}>
                 <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
-
 
                 <Image source={logoImg} style={styles.backgroundImage} />
                 <View style={styles.textContainer}>
@@ -214,13 +225,10 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
                     </View>
                 </View>
 
-
-
-
                 <Text style={styles.labelText}>Notes</Text>
                 <View style={styles.inputContainer}>
                     <TextInput
-                        style={styles.NotesInputContainer}
+                        style={[styles.textInputContainer, styles.notesInput]}
                         placeholder="Notes"
                         multiline={true}
                         numberOfLines={4}
@@ -228,25 +236,23 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
                         onChangeText={setNotes}
                     />
                 </View>
+
                 <TouchableOpacity
                     style={[styles.addButton, loading && styles.disabledButton]}
                     onPress={handleAddTask}
                     disabled={loading}
-                    >
+                >
                     {loading ? (
-                        <ActivityIndicator size="small" color="#fff" />
+                        <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
-                        <Text style={commonStyles.addButtonText}>
-                        {isEditMode ? "Update Task" : "Add New Task"}
-                        </Text>
+                        <Text style={styles.addButtonText}>{isEditMode ? 'Update Task' : 'Add Task'}</Text>
                     )}
-                    </TouchableOpacity>
-
+                </TouchableOpacity>
             </ScrollView>
-
+            <Toast />
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
 
@@ -317,15 +323,7 @@ const styles = StyleSheet.create({
         padding: 15,
         fontSize: 14
     },
-    NotesInputContainer: {
-        borderWidth: 0.1,
-        shadowColor: 'black',
-        shadowRadius: 3.84,
-        elevation: 5,
-        borderRadius: 10,
-        backgroundColor: 'white',
-        padding: 15,
-        fontSize: 14,
+    notesInput: {
         height: 150,
         textAlignVertical: 'top'
     },
@@ -367,6 +365,11 @@ const styles = StyleSheet.create({
     selectedCategory: {
         borderColor: '#5E35B1',
         borderWidth: 2
+    },
+    addButtonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white'
     }
 });
 

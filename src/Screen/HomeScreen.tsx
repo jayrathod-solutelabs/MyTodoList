@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ScrollView, ActivityIndicator } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import CustomCard from '../components/CustomCard';
 const logoImg = require("../assets/home-background.png");
 import { useNavigation } from "@react-navigation/native";
@@ -12,23 +12,18 @@ import { completedTasks, fetchTasks, pendingTasks } from './AddTodoSlice';
 import { commonStyles } from '../styles/commonStyles';
 import { useEffect } from 'react';
 import React from "react";
-
+import { logout, selectUser } from './AuthSlice';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const HomeScreen = () => {
-
     const dispatch = useDispatch<AppDispatch>(); // ✅ Dispatch Redux actions
-
-
     const loading = useSelector((state: RootState) => state.tasks.loading);
-
-
-
     const navigation = useNavigation<NavigationProp>();
     const tasks = useSelector((state: RootState) => state.tasks.tasks);
-    // const completedCount = useSelector((state: RootState) => completedTasks(state).length);
-    // const pendingCount = useSelector((state: RootState) => pendingTasks(state).length);
+    const user = useSelector(selectUser);
+    
+    // Filter tasks
     const pendingTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => !task.meta.isCompleted));
     const completedTasks = useSelector((state: RootState) => state.tasks.tasks.filter(task => task.meta.isCompleted));
     const completedCount = completedTasks.length;
@@ -38,7 +33,34 @@ const HomeScreen = () => {
         dispatch(fetchTasks());
     }, [dispatch]);
 
+    // Handle logout
+    const handleLogout = () => {
+        Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Logout",
+                    onPress: () => {
+                        dispatch(logout());
+                        navigation.navigate("Login");
+                    }
+                }
+            ]
+        );
+    };
 
+    // Get first name for greeting
+    const getUserFirstName = () => {
+        if (!user || !user.name) return "There";
+        const firstName = user.name.split(" ")[0];
+        return firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+    };
+    
 
     return (
         <ScrollView style={commonStyles.baseContainer}>
@@ -47,6 +69,14 @@ const HomeScreen = () => {
             <View style={styles.backgroundImage}>
                 <Image source={logoImg} style={styles.backgroundImage} />
                 <View style={styles.textContainer}>
+
+                <TouchableOpacity 
+                            style={styles.logoutButton}
+                            onPress={handleLogout}>
+                            <Text style={styles.logoutText}>Logout</Text>
+                        </TouchableOpacity>
+                    
+                    <Text style={[styles.DateTimeText, {fontWeight: 'bold'}]}>Hello, {getUserFirstName()}</Text>
                     <Text style={styles.DateTimeText}>{getFormattedDate()}</Text>
                     <Text style={styles.headerText}>My Todo List</Text>
                 </View>
@@ -85,13 +115,10 @@ const HomeScreen = () => {
                 <Text style={commonStyles.addButtonText}>Add New Task</Text>
             </TouchableOpacity>
         </ScrollView>
-
     )
-
 }
 
-export default HomeScreen
-
+export default HomeScreen;
 
 const getFormattedDate = () => {
     const options: Intl.DateTimeFormatOptions = {
@@ -102,14 +129,15 @@ const getFormattedDate = () => {
     return new Date().toLocaleDateString('en-US', options);
 };
 
-
 const styles = StyleSheet.create({
     text: {
         fontSize: 30,
     },
     backgroundImage: {
         width: '100%',
-        height: 230
+        height: 260,
+        position: 'relative',
+        resizeMode: 'cover',
     },
     cardsView: {
         alignItems: "center",
@@ -149,8 +177,8 @@ const styles = StyleSheet.create({
     },
     
     completedSectionContainer: {
-        marginTop: completedTasks.length > 1 ? 20 : 10, // Reduce margin if only one task
-        paddingTop: completedTasks.length > 1 ? 10 : 5,
+        marginTop: 20,
+        paddingTop: 10,
     },    
     completedSectionTitle: {
         fontSize: 16,
@@ -166,7 +194,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
         elevation: 1,
         padding: 5,
-
     },
     noTasksText: {
         textAlign: 'center',
@@ -174,5 +201,34 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#0000000',
         fontFamily: 'Inter-Bold'
+    },
+    // Styles for user greeting and logout
+    userContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '90%',
+        marginTop: 15,
+    },
+    greetingText: {
+        color: 'white',
+        fontSize: 16,
+        fontFamily: 'Inter-Medium',
+    },
+    logoutButton: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        zIndex: 1,
+        position: 'absolute',
+        top: 40,
+        right: 20,
+
+    },
+    logoutText: {
+        color: 'white',
+        fontSize: 14,
+        fontFamily: 'Inter-Medium',
     },
 });

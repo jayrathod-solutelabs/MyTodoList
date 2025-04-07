@@ -14,11 +14,15 @@ export type RootStackParamList = {
     Login: undefined;
 };
 
+interface StackNavigationProps {
+    initialRouteName?: keyof RootStackParamList;
+}
+
 const Stack = createStackNavigator<RootStackParamList>();
 
-export default function StackNavigation() {
+export default function StackNavigation({ initialRouteName = 'SignUp' }: StackNavigationProps) {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName={initialRouteName}>
             <Stack.Screen
                 name="SignUp"
                 options={{ headerShown: false }}

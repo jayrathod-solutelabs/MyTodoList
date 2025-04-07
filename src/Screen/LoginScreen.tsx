@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StatusBar,
   TextInput,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 const logoImg = require("../assets/home-background.png");
 const googleImg = require("../assets/google.png");
@@ -14,12 +16,53 @@ import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/StackNavigation";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { login, LoginRequest } from "./AuthSlice";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const LoginScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const dispatch = useDispatch<AppDispatch>();
   const [rememberMe, setRememberMe] = useState(false);
+  
+  // State for form fields
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
+  // Get auth state from redux
+  const { loading, error } = useSelector((state: RootState) => state.auth);
+
+  // Handle login
+  const handleLogin = async () => {
+    // Validate inputs
+    if (!email || !password) {
+      Alert.alert("Error", "Please enter email and password");
+      return;
+    }
+    
+    // Create login data object
+    const credentials: LoginRequest = {
+      email,
+      password
+    };
+
+    try {
+      // Dispatch login action
+      const resultAction = await dispatch(login(credentials));
+      
+      if (login.fulfilled.match(resultAction)) {
+        // Login successful, navigate to Home screen
+        navigation.navigate("Home");
+      } else {
+        // Show error if login failed but wasn't caught in the thunk
+        Alert.alert("Login Failed", "Please check your credentials and try again");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,7 +77,7 @@ const LoginScreen = () => {
         <View style={styles.textContainer}>
           <Text style={styles.headerText}>Sign in to your Account</Text>
           <View style={styles.loginTextContainer}>
-            <Text style={styles.accountText}>
+            <Text style={styles.accountTextForBackground}>
               Enter your email and password to log in
             </Text>
           </View>
@@ -59,8 +102,10 @@ const LoginScreen = () => {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInputContainer}
-            placeholder="Loisbecket@gmail.com"
+            placeholder="Email address"
             keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
         </View>
 
@@ -69,8 +114,13 @@ const LoginScreen = () => {
             style={styles.textInputContainer}
             placeholder="Password"
             secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
           />
         </View>
+
+        {/* Error message */}
+        {error && <Text style={styles.errorText}>{error}</Text>}
 
         {/* Remember Me and Forgot Password */}
         <View style={styles.rememberContainer}>
@@ -88,10 +138,23 @@ const LoginScreen = () => {
 
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate("AddTask")}
+          onPress={handleLogin}
+          disabled={loading}
         >
-          <Text style={commonStyles.addButtonText}>Log In</Text>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={commonStyles.addButtonText}>Log In</Text>
+          )}
         </TouchableOpacity>
+
+        {/* Don't have an account */}
+        <View style={styles.signupContainer}>
+          <Text style={styles.accountText}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+            <Text style={styles.signUpLink}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
 
       </View>
     </View>
@@ -124,6 +187,21 @@ const styles = StyleSheet.create({
   backgroundImage: {
     width: "100%",
     height: 230,
+  },
+    signupContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  accountText: {
+    color: "#666",
+    fontSize: 14,
+  },
+  signUpLink: {
+    color: "#5E35B1",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   cardsView: {
     alignItems: "center",
@@ -212,7 +290,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 6,
   },
-  accountText: {
+  accountTextForBackground: {
     color: "rgba(255, 255, 255, 0.8)",
     fontSize: 14,
   },
@@ -262,37 +340,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#888",
   },
-  rememberContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 25,
-  },
-  rememberMeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: "#888",
-    marginRight: 8,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: "#5E35B1",
-    fontWeight: "500",
-  },
-  checkboxChecked: {
-    backgroundColor: "#5E35B1",
-    borderColor: "#5E35B1",
-  },
-  rememberMeText: {
-    fontSize: 14,
-    color: "#666",
-  },
   eyeIcon: {
     position: "absolute",
     right: 10,
@@ -318,8 +365,8 @@ const styles = StyleSheet.create({
   orContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
-    marginBottom: 20,
+    marginBottom : 15,
+
   },
   orLine: {
     flex: 1,
@@ -354,6 +401,42 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: 16,
     fontWeight: "500",
+  },
+  rememberContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  rememberMeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginRight: 8,
+  },
+  checkboxChecked: {
+    backgroundColor: '#5E35B1',
+    borderColor: '#5E35B1',
+  },
+  rememberMeText: {
+    color: '#333',
+    fontSize: 14,
+  },
+  forgotPasswordText: {
+    color: '#5E35B1',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
