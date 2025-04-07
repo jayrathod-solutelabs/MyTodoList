@@ -33,7 +33,7 @@ const SignUp = () => {
           <Text style={styles.headerText}>Sign Up</Text>
           <View style={styles.loginTextContainer}>
             <Text style={styles.accountText}>Already have an account? </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
               <Text style={styles.loginLink}>Log In</Text>
             </TouchableOpacity>
           </View>
