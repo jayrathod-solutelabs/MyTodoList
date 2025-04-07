@@ -19,15 +19,12 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { login, LoginRequest } from "./AuthSlice";
-const CheckmarkImage = require("../assets/checkmark.png");
-
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const LoginScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const dispatch = useDispatch<AppDispatch>();
-  const [rememberMe, setRememberMe] = useState(false);
   
   // State for form fields
   const [email, setEmail] = useState("");
@@ -132,21 +129,8 @@ const LoginScreen = () => {
         {/* Error message */}
         {error && <Text style={styles.errorText}>{error}</Text>}
 
-        {/* Remember Me and Forgot Password */}
-        <View style={styles.rememberContainer}>
-          <TouchableOpacity
-            style={styles.rememberMeButton}
-            onPress={() => setRememberMe(!rememberMe)}>
-            <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
-              {rememberMe ? (
-                <Image source={CheckmarkImage} style={styles.checkmarkImage} />
-              ) : (
-                <View style={{ minWidth: 20, minHeight: 20 }} />
-              )}
-            </View>
-            <Text style={styles.rememberMeText}>Remember me</Text>
-          </TouchableOpacity>
-
+        {/* Forgot Password */}
+        <View style={styles.forgotPasswordContainer}>
           <TouchableOpacity onPress={() => {}}>
             <Text style={styles.forgotPasswordText}>Forgot Password ?</Text>
           </TouchableOpacity>
@@ -428,9 +412,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
-  rememberContainer: {
+  forgotPasswordContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 15,
   },
@@ -444,41 +428,15 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
     overflow: "hidden",
   },
-  checkmarkImage: {
-    width: 16,
-    height: 16,
-    tintColor: 'white',
-    resizeMode: 'contain',
-},
-  rememberMeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    marginRight: 8,
-  },
-  checkboxChecked: {
-    backgroundColor: '#5E35B1',
-    borderColor: '#5E35B1',
-  },
-  rememberMeText: {
-    color: '#333',
-    fontSize: 14,
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   forgotPasswordText: {
     color: '#5E35B1',
     fontSize: 14,
     fontWeight: '500',
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-    textAlign: 'center',
   },
 });
 

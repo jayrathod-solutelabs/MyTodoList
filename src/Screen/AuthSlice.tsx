@@ -3,6 +3,10 @@ import { API_METHODS } from '../api/apiMethods';
 import { REGISTER_ENDPOINT, LOGIN_ENDPOINT } from '../api/endpoints';
 import { apiRequest } from '../api/apiManager';
 import { RootState } from '../../store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Storage keys
+const USER_STORAGE_KEY = '@user_data';
 
 // Types
 export interface User {
@@ -37,6 +41,33 @@ const initialState: AuthState = {
   isAuthenticated: false,
 };
 
+// Helper functions for AsyncStorage
+export const saveUserToStorage = async (user: User) => {
+  try {
+    await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  } catch (error) {
+    console.error('Error saving user to storage:', error);
+  }
+};
+
+export const removeUserFromStorage = async () => {
+  try {
+    await AsyncStorage.removeItem(USER_STORAGE_KEY);
+  } catch (error) {
+    console.error('Error removing user from storage:', error);
+  }
+};
+
+export const getUserFromStorage = async (): Promise<User | null> => {
+  try {
+    const userData = await AsyncStorage.getItem(USER_STORAGE_KEY);
+    return userData ? JSON.parse(userData) : null;
+  } catch (error) {
+    console.error('Error getting user from storage:', error);
+    return null;
+  }
+};
+
 // Async thunks
 export const register = createAsyncThunk(
   "auth/register",
@@ -47,6 +78,8 @@ export const register = createAsyncThunk(
         REGISTER_ENDPOINT,
         userData
       );
+      // Save user data to storage
+      await saveUserToStorage(response);
       return response;
     } catch (error: any) {
       console.error("Failed to register:", error);
@@ -62,12 +95,30 @@ export const login = createAsyncThunk(
       const response = await apiRequest<User>(
         API_METHODS.POST,
         LOGIN_ENDPOINT,
-        credentials
+        credentials as any // Type assertion to bypass type checking for API request
       );
+      
+      // Save user data to storage
+      await saveUserToStorage(response);
+      
       return response;
     } catch (error: any) {
       console.error("Failed to login:", error);
       return rejectWithValue(error.response?.data?.message || "Login failed");
+    }
+  }
+);
+
+// Initialize auth state from storage
+export const initializeAuth = createAsyncThunk(
+  "auth/initialize",
+  async () => {
+    try {
+      const user = await getUserFromStorage();
+      return user;
+    } catch (error) {
+      console.error("Failed to initialize auth:", error);
+      return null;
     }
   }
 );
@@ -81,6 +132,8 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
+      // Remove user data from storage
+      removeUserFromStorage();
     },
     clearError: (state) => {
       state.error = null;
@@ -115,6 +168,13 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      // Initialize
+      .addCase(initializeAuth.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.user = action.payload;
+          state.isAuthenticated = true;
+        }
       });
   },
 });

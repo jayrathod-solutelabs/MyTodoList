@@ -60,9 +60,9 @@ const SignUp = () => {
       const resultAction = await dispatch(register(userData));
       
       if (register.fulfilled.match(resultAction)) {
-        // Registration successful, navigate to Add Task screen
+        // Registration successful, navigate to Home screen
         Alert.alert("Success", "Account created successfully");
-        navigation.navigate("AddTask");
+        navigation.navigate("Home");
       } else {
         // Show error if registration failed but wasn't caught in the thunk
         Alert.alert("Registration Failed", "Please try again later");

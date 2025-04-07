@@ -69,14 +69,14 @@ const HomeScreen = () => {
             <View style={styles.backgroundImage}>
                 <Image source={logoImg} style={styles.backgroundImage} />
                 <View style={styles.textContainer}>
-
-                <TouchableOpacity 
-                            style={styles.logoutButton}
-                            onPress={handleLogout}>
-                            <Text style={styles.logoutText}>Logout</Text>
-                        </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={styles.logoutButton}
+                        onPress={handleLogout}>
+                        <Text style={styles.logoutText}>Logout</Text>
+                    </TouchableOpacity>
                     
                     <Text style={[styles.DateTimeText, {fontWeight: 'bold'}]}>Hello, {getUserFirstName()}</Text>
+                    <Text style={styles.userEmailText}>{user?.email}</Text>
                     <Text style={styles.DateTimeText}>{getFormattedDate()}</Text>
                     <Text style={styles.headerText}>My Todo List</Text>
                 </View>
@@ -230,5 +230,12 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 14,
         fontFamily: 'Inter-Medium',
+    },
+    userEmailText: {
+        fontSize: 14,
+        color: 'white',
+        opacity: 0.8,
+        marginTop: 2,
+        fontFamily: 'Inter-Regular'
     },
 });
