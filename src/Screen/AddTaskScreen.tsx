@@ -128,7 +128,7 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
         }
     }
 
-    
+    // Don't render if not authenticated
     if (!isAuthenticated) {
         return null;
     }
@@ -209,10 +209,10 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
                                 value={formattedTime}
                                 onFocus={showTimePickerModal}
                             />
-                            <Image
-                                source={require('../assets/time_icon.png')}
+                            {/* <Image
+                                source={require('../assets')}
                                 style={commonStyles.inputIcon}
-                            />
+                            /> */}
                         </View>
                         {showTimePicker && (
                             <DateTimePicker

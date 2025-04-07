@@ -31,6 +31,8 @@ const SignUp = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   
   // Get auth state from redux
   const { loading, error } = useSelector((state: RootState) => state.auth);
@@ -122,15 +124,22 @@ const SignUp = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={styles.passwordContainer}>
           <TextInput
-            style={styles.textInputContainer}
+            style={styles.passWordInputContainer}
             placeholder="Password"
-            secureTextEntry={true}
             value={password}
             onChangeText={setPassword}
+            secureTextEntry={!showPassword}
           />
+          <TouchableOpacity 
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}>
+              <Image source={showPassword? require('../assets/eye.png'): require('../assets/eye-off.png')}
+          style={styles.icon}/>
+          </TouchableOpacity>
         </View>
+        
 
         {/* Error message */}
         {error && <Text style={styles.errorText}>{error}</Text>}
@@ -193,6 +202,17 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 230,
   },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    overflow: "hidden",
+  },
+
   cardsView: {
     alignItems: "center",
     flexDirection: "row",
@@ -216,12 +236,18 @@ const styles = StyleSheet.create({
     color: "white",
     marginTop: 14,
   },
+  
   addButton: {
     backgroundColor: "#5E35B1",
     borderRadius: 30,
     paddingVertical: 15,
     alignItems: "center",
     marginTop: 14,
+  },
+
+  passWordInputContainer: {
+    padding: 15,
+    fontSize: 16,
   },
 
   completedSectionTitle: {
@@ -332,12 +358,12 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     position: "absolute",
-    right: 10,
-    top: 10,
-    padding: 5,
+    right: 15,
   },
-  eyeIconText: {
-    fontSize: 18,
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
   loginButton: {
     backgroundColor: "#4169e1",

@@ -19,6 +19,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { login, LoginRequest } from "./AuthSlice";
+const CheckmarkImage = require("../assets/checkmark.png");
+
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -30,6 +32,8 @@ const LoginScreen = () => {
   // State for form fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   
   // Get auth state from redux
   const { loading, error } = useSelector((state: RootState) => state.auth);
@@ -95,7 +99,7 @@ const LoginScreen = () => {
         {/* Or Divider */}
         <View style={styles.orContainer}>
           <View style={styles.orLine} />
-          <Text style={styles.orText}>Or</Text>
+          <Text style={styles.orText}>Or Login with</Text>
           <View style={styles.orLine} />
         </View>
 
@@ -109,14 +113,20 @@ const LoginScreen = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={styles.passwordContainer}>
           <TextInput
-            style={styles.textInputContainer}
+            style={styles.passWordInputContainer}
             placeholder="Password"
-            secureTextEntry={true}
             value={password}
             onChangeText={setPassword}
+            secureTextEntry={!showPassword}
           />
+          <TouchableOpacity 
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}>
+              <Image source={showPassword? require('../assets/eye.png'): require('../assets/eye-off.png')}
+          style={styles.icon}/>
+          </TouchableOpacity>
         </View>
 
         {/* Error message */}
@@ -127,7 +137,13 @@ const LoginScreen = () => {
           <TouchableOpacity
             style={styles.rememberMeButton}
             onPress={() => setRememberMe(!rememberMe)}>
-            <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}/>
+            <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
+              {rememberMe ? (
+                <Image source={CheckmarkImage} style={styles.checkmarkImage} />
+              ) : (
+                <View style={{ minWidth: 20, minHeight: 20 }} />
+              )}
+            </View>
             <Text style={styles.rememberMeText}>Remember me</Text>
           </TouchableOpacity>
 
@@ -234,6 +250,11 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
 
+
+  passWordInputContainer: {
+    padding: 15,
+    fontSize: 16,
+  },
   completedSectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -272,6 +293,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
   titleContainer: {
     paddingTop: 60,
@@ -408,6 +434,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
   },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    overflow: "hidden",
+  },
+  checkmarkImage: {
+    width: 16,
+    height: 16,
+    tintColor: 'white',
+    resizeMode: 'contain',
+},
   rememberMeButton: {
     flexDirection: 'row',
     alignItems: 'center',
